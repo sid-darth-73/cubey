@@ -74,7 +74,7 @@ export function Signup() {
                     <HeartIcon />
                     <div>
                         by{" "}
-                        <a href="https://github.com/sid-darth-73/cubey" className="hover:underline">
+                        <a href="https://github.com/sid-darth-73/cubey" className="hover:underline" target="_blank">
                             unbit
                         </a>
                     </div>
