@@ -35,6 +35,7 @@ export function Signup() {
 
             localStorage.setItem("token", data.token);
             localStorage.setItem("shareLink", data.shareLink);
+            localStorage.setItem("user", wcaIdOrEmail);
             navigate("/dashboard");
         } catch (err) {
             setError("Network error. Try again.");
