@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { Input } from "../components/Input";
+import { Input } from "../components/ui/Input";
 import { Button } from "../components/ui/Button";
 import { useNavigate } from "react-router-dom";
 import { HeartIcon } from "../components/ui/HeartIcon";

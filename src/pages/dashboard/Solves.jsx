@@ -43,7 +43,7 @@ export default function Solves() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">🧩 Your Solves</h2>
+      <h2 className="text-2xl font-bold mb-6"> Your Solves</h2>
 
       <div className="bg-slate-800 p-4 rounded-lg mb-8">
         <h3 className="text-lg font-semibold mb-2">Add a new solve</h3>
