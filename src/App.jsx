@@ -4,18 +4,20 @@ import { Signup } from './pages/Signup';
 import Solves from './pages/dashboard/Solves';
 import { DashboardLayout } from './components/DashboardLayout';
 import { RequireAuth } from './components/RequireAuth';
+import Averages from './pages/dashboard/Averages';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<Signup />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/signup" element={<Signup />} />
 
         <Route path="/dashboard" element={<RequireAuth><DashboardLayout /></RequireAuth>}>
           <Route index element={<Solves />} />
           <Route path="solves" element={<Solves />} />
-          {/* other sections like /dashboard/averages etc */}
+          <Route path="averages" element={<Averages/>} />
         </Route>
       </Routes>
     </BrowserRouter>
