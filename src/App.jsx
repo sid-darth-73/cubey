@@ -5,6 +5,7 @@ import Solves from './pages/dashboard/Solves';
 import { DashboardLayout } from './components/DashboardLayout';
 import { RequireAuth } from './components/RequireAuth';
 import Averages from './pages/dashboard/Averages';
+import Learn from './pages/dashboard/Learn';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route index element={<Solves />} />
           <Route path="solves" element={<Solves />} />
           <Route path="averages" element={<Averages/>} />
+          <Route path="learn" element={<Learn/>} />
         </Route>
       </Routes>
     </BrowserRouter>
