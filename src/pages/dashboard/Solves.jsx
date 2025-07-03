@@ -1,19 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "../../utils/api";
 import { Input } from "../../components/ui/Input";
-import { Button } from "../../components/ui/Button";
 import { Badge } from "../../components/ui/Badge";
+import { AddButton } from "../../components/ui/AddButton";
+
+const eventOptions = ['2x2', '3x3', '4x4', '5x5', 'OH', 'Pyraminx', 'Skewb', 'BLD', 'Other'];
 
 export default function Solves() {
   const [solves, setSolves] = useState([]);
   const [scramble, setScramble] = useState('');
   const [time, setTime] = useState('');
   const [type, setType] = useState('3x3');
-
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef();
   const fetchSolves = async () => {
     try {
       const res = await axios.get('/solves');
-      setSolves(res.data.reverse()); 
+      setSolves(res.data.reverse());
     } catch (err) {
       console.error("Failed to fetch solves:", err);
     }
@@ -22,11 +25,17 @@ export default function Solves() {
   useEffect(() => {
     fetchSolves();
   }, []);
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleAddSolve = async () => {
-    console.log(scramble)
-    console.log(time)
-    console.log(type)
     try {
       await axios.post('/solves', {
         scramble,
@@ -43,19 +52,67 @@ export default function Solves() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6"> Your Solves</h2>
+      <h2 className="text-2xl font-bold mb-6">Your Solves</h2>
 
       <div className="bg-slate-800 p-4 rounded-lg mb-8">
         <h3 className="text-lg font-semibold mb-2">Add a new solve</h3>
         <div className="space-y-3">
-          <Input value={scramble} onChange={(e) => setScramble(e.target.value)} placeholder="Scramble" />
-          <Input type="number" value={time} onChange={(e) => setTime(e.target.value)} placeholder="Time in seconds" />
-          <select className="bg-slate-700 p-2 rounded text-white" value={type} onChange={(e) => setType(e.target.value)}>
-            {['2x2', '3x3', '4x4', '5x5', 'OH', 'Pyraminx', 'Skewb', 'BLD', 'Other'].map(ev => (
-              <option key={ev} value={ev}>{ev}</option>
-            ))}
-          </select>
-          <Button text="Add Solve" onClick={handleAddSolve} />
+          <Input
+            value={scramble}
+            onChange={(e) => setScramble(e.target.value)}
+            placeholder="Scramble"
+          />
+          <Input
+            type="number"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+            placeholder="Time in seconds"
+          />
+          <div className="flex items-center gap-2" ref={dropdownRef}>
+            <button
+              type="button"
+              onClick={() => setDropdownOpen((prev) => !prev)}
+              className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-white bg-slate-700 rounded-lg hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-400"
+            >
+              {type}
+              <svg
+                className="w-2.5 h-2.5 ml-2"
+                viewBox="0 0 10 6"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M1 1L5 5L9 1"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+
+            {dropdownOpen && (
+              <div className="absolute mt-12 z-20 bg-white dark:bg-slate-700 rounded-lg shadow w-36">
+                <ul className="py-2 text-sm text-gray-700 dark:text-gray-200">
+                  {eventOptions.map((ev) => (
+                    <li key={ev}>
+                      <button
+                        onClick={() => {
+                          setType(ev);
+                          setDropdownOpen(false);
+                        }}
+                        className="w-full text-left block px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-600 dark:hover:text-white"
+                      >
+                        {ev}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <AddButton onClick={handleAddSolve} />
+          </div>
         </div>
       </div>
 
@@ -63,7 +120,7 @@ export default function Solves() {
         {solves.length === 0 ? (
           <p>No solves yet.</p>
         ) : (
-          solves.map(solve => (
+          solves.map((solve) => (
             <div
               key={solve._id}
               className="bg-slate-800 p-4 rounded-lg border border-slate-700 hover:bg-slate-700 transition"

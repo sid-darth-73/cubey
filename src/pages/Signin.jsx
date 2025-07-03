@@ -1,8 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { Input } from "../components/ui/Input";
-import { Button } from "../components/ui/Button";
 import { useNavigate } from "react-router-dom";
-import { HeartIcon } from "../components/ui/HeartIcon";
 
 export function Signin() {
     const wcaRef = useRef(null);
@@ -14,73 +11,85 @@ export function Signin() {
         const wcaIdOrEmail = wcaRef.current?.value?.trim();
         const password = passwordRef.current?.value;
 
-        if (!wcaIdOrEmail || !password) {
-            setError("All fields are required.");
-            return;
+        if(!wcaIdOrEmail || !password) {
+            setError("All fields are required."); return;
         }
-
         try {
             const res = await fetch("http://localhost:3002/auth/signin", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ wcaIdOrEmail, password }),
             });
-
             const data = await res.json();
-
-            if (!res.ok) {
-                setError(data.message || "Invalid credentials");
-                return;
+            if(!res.ok) {
+                setError(data.message || "Invalid credentials"); return;
             }
-
             localStorage.setItem("token", data.token);
             localStorage.setItem("shareLink", data.shareLink);
             localStorage.setItem("user", wcaIdOrEmail);
             navigate("/dashboard");
-        } catch (err) {
+        } catch(err) {
             setError("Network error. Try again.");
         }
     }
 
     useEffect(() => {
         const handler = (e) => {
-            if (e.key === "Enter") handleSignIn();
+            if(e.key === "Enter") handleSignIn();
         };
         document.addEventListener("keydown", handler);
         return () => document.removeEventListener("keydown", handler);
     }, []);
 
     return (
-        <div className="flex flex-col justify-between min-h-screen bg-slate-900 text-white p-4">
-            <div className="flex flex-grow items-center justify-center">
-                <div className="bg-slate-800 rounded-xl p-8 w-full max-w-lg shadow-lg space-y-6">
-                    <h1 className="text-2xl text-center font-mont">Sign In</h1>
-                    <Input placeholder="WCA ID or Email" reference={wcaRef} />
-                    <Input placeholder="Password" reference={passwordRef} type="password" />
-                    {error && <div className="text-red-400 text-sm">{error}</div>}
-                    <div className="flex justify-center">
-                        <Button text="Sign In" onClick={handleSignIn} variant="primary" size="md" />
-                    </div>
-                    <p className="text-sm text-center text-gray-300">
-                        Don't have an account?{" "}
-                        <span className="text-blue-400 cursor-pointer" onClick={() => navigate("/signup")}>
-                            Sign up
-                        </span>
-                    </p>
-                </div>
-            </div>
-            <footer className="text-center text-gray-400 text-sm mb-2 font-normal">
-                <div className="flex items-center justify-center">
-                    <div>Made with</div>
-                    <HeartIcon />
-                    <div>
-                        by{" "}
-                        <a href="https://github.com/sid-darth-73/cubey" className="hover:underline" target="_blank">
-                            unbit
-                        </a>
+        <div className="flex items-center justify-center min-h-screen bg-slate-900 text-white">
+            <form onSubmit={(e) => {
+                e.preventDefault();
+                handleSignIn();
+                }}
+                className="bg-slate-800 p-8 w-full max-w-md rounded-2xl shadow-lg flex flex-col gap-4">
+                <h2 className="text-2xl font-semibold text-center mb-4">Sign In</h2>
+                <div className="flex flex-col gap-1">
+                    <label htmlFor="email" className="text-sm font-medium text-slate-200">WCA ID or Email</label>
+                    <div className="flex items-center border border-slate-600 rounded-lg h-12 pl-3 focus-within:border-blue-500 transition">
+                        <input
+                            ref={wcaRef}
+                            type="text"
+                            placeholder="Enter your WCA ID or Email"
+                            className="bg-transparent border-none outline-none text-white px-2 flex-1 h-full"
+                        />
                     </div>
                 </div>
-            </footer>
+
+                <div className="flex flex-col gap-1">
+                    <label htmlFor="password" className="text-sm font-medium text-slate-200">Password</label>
+                    <div className="flex items-center border border-slate-600 rounded-lg h-12 pl-3 focus-within:border-blue-500 transition">
+                        <input
+                            ref={passwordRef}
+                            type="password"
+                            placeholder="Enter your password"
+                            className="bg-transparent border-none outline-none text-white px-2 flex-1 h-full"
+                        />
+                    </div>
+                </div>
+
+                {error && <div className="text-red-400 text-sm mt-1">{error}</div>}
+
+                <button
+                    className="mt-4 bg-slate-700 hover:bg-slate-600 transition text-white font-medium rounded-lg h-12 w-full cursor-pointer">
+                    Sign In
+                </button>
+
+                <p className="text-sm text-center text-slate-300">
+                    Don't have an account?{" "}
+                    <span
+                        onClick={() => navigate("/signup")}
+                        className="text-blue-400 cursor-pointer hover:underline"
+                    >
+                        Sign up
+                    </span>
+                </p>
+            </form>
         </div>
     );
 }
