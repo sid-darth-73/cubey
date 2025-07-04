@@ -1,5 +1,4 @@
 import { Outlet, useNavigate } from 'react-router-dom';
-import { CtaButton } from './ui/CtaButton';
 import { NavButton } from './ui/NavButton';
 export function DashboardLayout() {
   const user = localStorage.getItem('user');
