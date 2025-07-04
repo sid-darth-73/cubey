@@ -5,6 +5,7 @@ import { Badge } from "../../components/ui/Badge";
 import { AddButton } from "../../components/ui/AddButton";
 import { applyScramble } from 'react-rubiks-cube-utils';
 import { Cube2D } from "../../utils/Cube2D"; 
+import Papa from 'papaparse';
 
 const eventOptions = ['2x2', '3x3', '4x4', '5x5', 'OH', 'Pyraminx', 'Skewb', 'BLD', 'Other'];
 
@@ -15,6 +16,8 @@ export default function Solves() {
   const [type, setType] = useState('3x3');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef();
+  const [importError, setImportError] = useState("");
+  const fileInputRef = useRef();
 
   const fetchSolves = async () => {
     try {
@@ -54,11 +57,48 @@ export default function Solves() {
     }
   };
 
+  const handleImportCSV = (e) => {
+    setImportError("");
+    const file = e.target.files[0];
+    if (!file) return;
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (results) => {
+        const rows = results.data;
+        let hasError = false;
+        for(const row of rows) {
+          const { time, type, scramble } = row;
+          if (!time || !type || !scramble) {
+            setImportError("CSV must have time, type, and scramble columns.");
+            hasError = true;
+            break;
+          }
+          try {
+            await axios.post('/solves', {
+              timeInSeconds: Number(time),
+              type,
+              scramble,
+            });
+          } catch (err) {
+            setImportError("Failed to import some solves. Please check your CSV.");
+            hasError = true;
+            break;
+          }
+        }
+        if(!hasError) {
+          fetchSolves();
+        }
+      },
+      error: () => setImportError("Failed to parse CSV file."),
+    });
+  };
+
   return (
     <div>
       <h2 className="text-2xl font-bold mb-6">Your Solves</h2>
 
-      <div className="bg-slate-800 p-4 rounded-lg mb-8">
+      <div className="bg-slate-800 p-4 rounded-lg mb-8 relative">
         <h3 className="text-lg font-semibold mb-2">Add a new solve</h3>
         <div className="space-y-3">
           <Input
@@ -117,6 +157,19 @@ export default function Solves() {
 
             <AddButton onClick={handleAddSolve} />
           </div>
+        </div>
+            {/* csv import */}
+        <div className="absolute bottom-4 right-4 px-4 py-1 flex flex-col items-end bg-slate-900 bg-opacity-80 rounded-lg shadow-lg">
+          <input
+            type="file"
+            accept=".csv"
+            ref={fileInputRef}
+            onChange={handleImportCSV}
+            className="block text-sm text-slate-300 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-500 hover:file:bg-blue-100"
+            style={{ maxWidth: 180 }}
+          />
+          {importError && <div className="text-red-400 text-xs mt-1">{importError}</div>}
+          <p className="text-xs text-slate-400">Import CSV: time,type,scramble</p>
         </div>
       </div>
 

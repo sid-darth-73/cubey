@@ -6,12 +6,14 @@ import { DashboardLayout } from './components/DashboardLayout';
 import { RequireAuth } from './components/RequireAuth';
 import Averages from './pages/dashboard/Averages';
 import Learn from './pages/dashboard/Learn';
+import { LandingPage } from './pages/LandingPage';
+import { Improve } from './pages/dashboard/Improve';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Signup />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/signup" element={<Signup />} />
 
@@ -20,6 +22,7 @@ function App() {
           <Route path="solves" element={<Solves />} />
           <Route path="averages" element={<Averages/>} />
           <Route path="learn" element={<Learn/>} />
+          <Route path="improve" element={<Improve/>} />
         </Route>
       </Routes>
     </BrowserRouter>
