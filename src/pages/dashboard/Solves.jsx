@@ -3,6 +3,8 @@ import axios from "../../utils/api";
 import { Input } from "../../components/ui/Input";
 import { Badge } from "../../components/ui/Badge";
 import { AddButton } from "../../components/ui/AddButton";
+import { applyScramble } from 'react-rubiks-cube-utils';
+import { Cube2D } from "../../utils/Cube2D"; 
 
 const eventOptions = ['2x2', '3x3', '4x4', '5x5', 'OH', 'Pyraminx', 'Skewb', 'BLD', 'Other'];
 
@@ -13,6 +15,7 @@ export default function Solves() {
   const [type, setType] = useState('3x3');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef();
+
   const fetchSolves = async () => {
     try {
       const res = await axios.get('/solves');
@@ -25,6 +28,7 @@ export default function Solves() {
   useEffect(() => {
     fetchSolves();
   }, []);
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -120,21 +124,45 @@ export default function Solves() {
         {solves.length === 0 ? (
           <p>No solves yet.</p>
         ) : (
-          solves.map((solve) => (
-            <div
-              key={solve._id}
-              className="bg-slate-800 p-4 rounded-lg border border-slate-700 hover:bg-slate-700 transition"
-            >
-              <div className="flex justify-between items-center">
-                <div>
-                  <div className="font-semibold text-lg">{solve.type}</div>
-                  <div className="text-sm text-gray-400">Scramble: {solve.scramble}</div>
-                  <div className="text-sm">Time: {solve.timeInSeconds}s</div>
+          solves.map((solve) => {
+            const isVisualCube = ['3x3', '4x4', '5x5'].includes(solve.type);
+            let cube = null;
+
+            if (isVisualCube && solve.scramble) {
+              try {
+                cube = applyScramble({ type: solve.type, scramble: solve.scramble });
+              } catch (err) {
+                console.error(`Invalid ${solve.type} scramble:`, solve.scramble, err);
+              }
+            }
+
+            return (
+              <div
+                key={solve._id}
+                className="bg-slate-800 p-4 rounded-lg border border-slate-700 hover:bg-slate-700 transition"
+              >
+                <div className="flex items-start justify-between gap-4 flex-wrap">
+                  <div className="flex-1 min-w-[200px]">
+                    <div className="font-semibold text-lg">{solve.type}</div>
+                    <div className="text-sm text-gray-400 break-words">
+                      Scramble: {solve.scramble}
+                    </div>
+                    <div className="text-sm">Time: {solve.timeInSeconds}s</div>
+                    {solve.isPB && (
+                      <Badge variant="default" className="mt-2 inline-block">PB</Badge>
+                    )}
+                  </div>
+
+                  {/* visual cube state */}
+                  {isVisualCube && cube && (
+                    <div className="w-fit max-w-[100%] overflow-auto">
+                      <Cube2D cube={cube} size={10} />
+                    </div>
+                  )}
                 </div>
-                {solve.isPB && <Badge variant="default">PB</Badge>}
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>
