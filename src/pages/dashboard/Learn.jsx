@@ -202,7 +202,7 @@ export default function Learn() {
           <div className="w-24 h-24 flex-shrink-0">
             {selectedAlgo?.[1]?.startsWith("oll") && selectedAlgo[1].length <= 5 && (
               <img
-                src={`/public/oll/svg/${selectedAlgo[1][3]}.svg`}
+                src={`/public/oll/svg/${selectedAlgo[1][3]}${selectedAlgo[1].length === 5 ? selectedAlgo[1][4] : ""}.svg`}
                 alt="OLL visual"
                 className="w-full h-full"
               />
@@ -232,7 +232,7 @@ export default function Learn() {
           </div>
 
           <div className="flex flex-col justify-center">
-            <div className="text-xl font-semibold">{selectedAlgo?.[0]}</div>
+            {/* <div className="text-xl font-semibold">{selectedAlgo?.[0]}</div> */}
             <div className="text-2xl text-gray-400">{selectedAlgo?.[2]}</div>
             <div className="text-lg mt-1">
               Your Best Time:{" "}
