@@ -1,3 +1,4 @@
+import { RightArrowIcon } from "./RightArrowIcon";
 export const GetStartedButton = ({onClick, text}) => {
   return (
     <button
@@ -11,14 +12,10 @@ export const GetStartedButton = ({onClick, text}) => {
         active:shadow-[inset_0_4px_3px_-2px_#386fff,0_4px_5px_-3px_#0000]"
         onClick={onClick}
     >
-      <span>{text}</span>
-      <kbd
-        className="ml-2 px-2 py-0.5 rounded
-          bg-[#3e6eff]
-          shadow-[inset_0_-3px_3px_-2px_#1f54f0,inset_0_3px_3px_-2px_#658dff,0_2px_2px_-2px_#0005,0_0_0_2px_#0d47f0]"
-      >
-        G
-      </kbd>
+      <div className="flex gap-2">
+        <span>{text}</span>
+        <RightArrowIcon/>
+      </div>
     </button>
   );
 };
