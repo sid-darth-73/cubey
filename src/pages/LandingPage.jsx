@@ -1,27 +1,73 @@
-import { Link } from 'react-router-dom';
-import {HeartIcon} from '../components/ui/HeartIcon'
-import {GetStartedButton} from '../components/ui/GetStartedButton';
+import { HeartIcon } from '../components/ui/HeartIcon';
+import { GetStartedButton } from '../components/ui/GetStartedButton';
 import { useNavigate } from 'react-router-dom';
-export const LandingPage = () => {
-  const navigate = useNavigate()
-  return (
-    <div className="flex items-center justify-center min-h-screen bg-slate-900 text-white">
-      <div className="bg-slate-800 p-8 w-full max-w-xl rounded-2xl shadow-lg flex flex-col gap-6 items-center">
-        <h1 className="text-3xl md:text-4xl font-bold text-center mb-2">Welcome to <span className="text-blue-400">Cubey</span></h1>
-        <p className="text-lg text-slate-200 text-center max-w-lg">
-          <b>Cubey</b> is your all-in-one platform for speedcubing improvement. Track your solves, analyze your averages, and learn new algorithms—all in one place. Whether you're a beginner or a seasoned cuber, Cubey helps you get faster, smarter, and more efficient with every solve.
-        </p>
-        <div className="flex gap-4 w-full justify-center">
-          <GetStartedButton onClick={()=> navigate("/signup")} text="Get Started" />
-        </div>
-        <footer className="mt-4 text-slate-400 text-sm text-center">
-          <div className='flex'>
-            <div>Made with </div>
-            <div><HeartIcon></HeartIcon></div>
-            <div> by <a href="https://github.com/sid-darth-73/cubey" target='_blank'>unbit</a> </div>
+import { TimerIcon } from '../components/ui/TimerIcon';
+import { TrophyIcon } from '../components/ui/TrophyIcon';
+import { LearnIcon } from '../components/ui/LearnIcon';
+import { ImportIcon } from '../components/ui/ImportIcon';
 
+export const LandingPage = () => {
+  const navigate = useNavigate();
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-900 via-slate-800 to-gray-900 text-white px-4">
+      <div className="bg-slate-800 p-6 md:p-8 w-full max-w-xl rounded-2xl shadow-xl border border-slate-600 backdrop-blur-sm">
+        <div className="flex flex-col gap-6 items-center">
+          <h1 className="text-3xl md:text-4xl animate-pulse font-bold text-center mb-2">
+            Welcome to <span className="text-blue-400">Cubey</span>
+          </h1>
+
+          <p className="text-lg text-slate-200 text-center max-w-lg">
+            <b>Cubey</b> is your all-in-one platform for speedcubing improvement.
+          </p>
+
+          {/* features */}
+          <div className="w-full flex flex-col gap-4">
+            <div className="flex items-start gap-3 bg-slate-700 bg-opacity-30 p-3 rounded-lg">
+              <TrophyIcon />
+              <p className="text-base text-slate-100 font-medium">
+                <span className="text-blue-400">Track your PBs</span> — monitor your best singles and averages with ease.
+              </p>
+            </div>
+
+            <div className="flex items-start gap-3 bg-slate-700 bg-opacity-30 p-3 rounded-lg">
+              <ImportIcon />
+              <p className="text-base text-slate-100 font-medium">
+                <span className="text-green-400">Import solves</span> — bring in your times from local files.
+              </p>
+            </div>
+
+            <div className="flex items-start gap-3 bg-slate-700 bg-opacity-30 p-3 rounded-lg">
+              <LearnIcon />
+              <p className="text-base text-slate-100 font-medium">
+                <span className="text-yellow-400">Learn algorithms</span> — break the habit of 2-Look and go full CFOP.
+              </p>
+            </div>
+
+            <div className="flex items-start gap-3 bg-slate-700 bg-opacity-30 p-3 rounded-lg">
+              <TimerIcon />
+              <p className="text-base text-slate-100 font-medium">
+                <span className="text-pink-400">Train smarter</span> — use the built-in timer and grind those Algorithms.
+              </p>
+            </div>
           </div>
-        </footer>
+
+          <div className="flex gap-4 w-full justify-center">
+            <GetStartedButton onClick={() => navigate("/signup")} text="Get Started" />
+          </div>
+
+          <footer className="mt-4 text-slate-400 text-sm text-center">
+            <div className="flex items-center justify-center gap-1">
+              <span>Made with</span>
+              <HeartIcon />
+              <span>
+                by{' '}
+                <a href="https://github.com/sid-darth-73/cubey" target="_blank" rel="noopener noreferrer"className="underline hover:text-blue-300">
+                  unbit
+                </a>
+              </span>
+            </div>
+          </footer>
+        </div>
       </div>
     </div>
   );

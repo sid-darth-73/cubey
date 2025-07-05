@@ -7,7 +7,9 @@ export function DashboardLayout() {
   return (
     <div className="flex min-h-screen bg-slate-900 text-white">
       <div className="w-64 bg-slate-800 p-4 space-y-6">
+        <div className='flex items-center justify-center'>
         <div className="font-bold text-lg mb-4">{user}</div>
+        </div>
         <NavButton text='Solves' onClick={()=> navigate('/dashboard/solves')}></NavButton>
         <NavButton text='Averages' onClick={()=> navigate('/dashboard/averages')}></NavButton>
         <NavButton text='Learn' onClick={()=> navigate('/dashboard/learn')}></NavButton>

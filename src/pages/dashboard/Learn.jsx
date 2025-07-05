@@ -116,7 +116,9 @@ export default function Learn() {
 
   return (
     <div className="p-4 text-white">
-      <h2 className="text-2xl font-bold mb-6">Learn & Train Algorithms</h2>
+      <div className="flex items-center justify-center">
+        <h2 className="text-2xl font-bold mb-6">Learn & Train Algorithms</h2>
+      </div>
 
       <div className="bg-slate-800 p-4 rounded mb-6">
         {/* Dropdowns */}
@@ -257,8 +259,7 @@ export default function Learn() {
         />
       </div>
       {/* timer */}
-      <div className="bg-slate-900 p-8 rounded-lg text-center">
-        <h3 className="text-xl mb-4">Timer</h3>
+      <div className="bg-slate-900 p-14 rounded-lg text-center">
         <div className="text-8xl font-bold font-mono">{time.toFixed(2)}s</div>
         <div className="mt-2 text-gray-400 text-sm">
           Press{" "}

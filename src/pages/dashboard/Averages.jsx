@@ -51,7 +51,9 @@ export default function Averages() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Your Averages</h2>
+      <div className="flex items-center justify-center">
+        <h2 className="text-2xl font-bold mb-6">Your Averages</h2>
+      </div>
 
       <div className="bg-slate-800 p-4 rounded-lg mb-8">
         <h3 className="text-lg font-semibold mb-2">Add a new ao5</h3>
