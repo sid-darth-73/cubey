@@ -3,7 +3,7 @@ export const AuthButton = ({ onClick, text }) => {
     <button
       type="submit"
       onClick={onClick}
-      className="mt-2 cursor-pointer w-full px-4 py-3 rounded-lg font-semibold text-white
+      className="mt-2 cursor-pointer font-quick w-full px-4 py-3 rounded-lg font-semibold text-white
         bg-gradient-to-b from-[#1f5afe] to-[#0f4cf5] 
         shadow-[inset_0_4px_3px_-2px_#386fff,0_4px_5px_-3px_#0009]
         border-b-[2pt] border-[#083acd]

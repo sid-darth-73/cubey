@@ -12,7 +12,7 @@ export const GetStartedButton = ({onClick, text}) => {
         active:shadow-[inset_0_4px_3px_-2px_#386fff,0_4px_5px_-3px_#0000]"
         onClick={onClick}
     >
-      <div className="flex gap-2">
+      <div className="flex gap-2 font-quick">
         <span>{text}</span>
         <RightArrowIcon/>
       </div>

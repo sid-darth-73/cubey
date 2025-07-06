@@ -5,6 +5,7 @@ import { Badge } from "../../components/ui/Badge";
 import { AddButton } from "../../components/ui/AddButton";
 import { applyScramble } from 'react-rubiks-cube-utils';
 import { Cube2D } from "../../utils/Cube2D"; 
+import { TimerIcon } from "../../components/ui/TimerIcon";
 import Papa from 'papaparse';
 
 const eventOptions = ['2x2', '3x3', '4x4', '5x5', 'OH', 'Pyraminx', 'Skewb', 'BLD', 'Other'];
@@ -96,19 +97,15 @@ export default function Solves() {
 
   return (
     <div>
-      <div className="flex items-center justify-center">
-        <h2 className="text-2xl font-bold mb-6">Your Solves</h2>
-      </div>
-
       <div className="bg-slate-800 p-4 rounded-lg mb-8 relative">
-        <h3 className="text-lg font-semibold mb-2">Add a new solve</h3>
+        <h3 className="text-2xl font-mont text-center font-semibold mb-2">Add a new solve</h3>
         <div className="space-y-3">
           <Input value={scramble} onChange={(e) => setScramble(e.target.value)} placeholder="Scramble"/>
 
           <Input type="number" value={time} onChange={(e) => setTime(e.target.value)} placeholder="Time in seconds"/>
 
           <div className="flex items-center gap-2" ref={dropdownRef}>
-            <button type="button" onClick={() => setDropdownOpen((prev) => !prev)} className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-white bg-slate-700 rounded-lg hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-400">
+            <button type="button" onClick={() => setDropdownOpen((prev) => !prev)} className="inline-flex items-center px-5 py-2.5 text-sm font-quick font-medium text-white bg-slate-700 rounded-lg hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-400">
               {type}
               <svg className="w-2.5 h-2.5 ml-2"
                 viewBox="0 0 10 6"
@@ -155,17 +152,17 @@ export default function Solves() {
             accept=".csv"
             ref={fileInputRef}
             onChange={handleImportCSV}
-            className="block text-sm text-slate-300 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-500 hover:file:bg-blue-700"
+            className="block text-sm font-quick text-slate-300 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-500 hover:file:bg-blue-700"
             style={{ maxWidth: 180 }}
           />
           {importError && <div className="text-red-400 text-xs mt-1">{importError}</div>}
-          <p className="text-xs text-slate-400">import csv: time,type,scramble</p>
+          <p className="text-xs font-mont text-slate-400">import csv: time,type,scramble</p>
         </div>
       </div>
 
       <div className="space-y-4">
         {solves.length === 0 ? (
-          <p>No solves yet.</p>
+          <p className="font-mont">No solves yet.</p>
         ) : (
           solves.map((solve) => {
             const isVisualCube = ['3x3', '4x4', '5x5'].includes(solve.type);
@@ -186,11 +183,11 @@ export default function Solves() {
               >
                 <div className="flex items-start justify-between gap-4 flex-wrap">
                   <div className="flex-1 min-w-[200px]">
-                    <div className="font-semibold text-lg">{solve.type}</div>
-                    <div className="text-sm text-gray-400 break-words">
-                      Scramble: {solve.scramble}
+                    <div className="font-semibold text-2xl">{solve.type}</div>
+                    <div className="text-md font-mont text-gray-400 break-words">
+                      {solve.scramble}
                     </div>
-                    <div className="text-sm text-amber-300">Time: {solve.timeInSeconds}s</div>
+                    <div className="text-md gap-1 text-amber-300 flex"> <div><TimerIcon/></div> <div>{solve.timeInSeconds}s</div></div>
                     {solve.isPB && (
                       <Badge variant="default" className="mt-2 inline-block">PB</Badge>
                     )}

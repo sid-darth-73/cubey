@@ -89,14 +89,10 @@ export default function Averages() {
     });
   };
 
-  return (
+    return (
     <div>
-      <div className="flex items-center justify-center">
-        <h2 className="text-2xl font-bold mb-6">Your Averages</h2>
-      </div>
-
       <div className="bg-slate-800 p-4 rounded-lg mb-8 relative">
-        <h3 className="text-lg font-semibold mb-2">Add a new ao5</h3>
+        <h3 className="text-2xl font-mont text-center font-semibold mb-2">Add a new ao5</h3>
         <div className="space-y-3">
           <Input
             type="number"
@@ -109,7 +105,7 @@ export default function Averages() {
             <button
               type="button"
               onClick={() => setDropdownOpen((prev) => !prev)}
-              className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-white bg-slate-700 rounded-lg hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-400"
+              className="inline-flex items-center px-5 py-2.5 text-sm font-quick font-medium text-white bg-slate-700 rounded-lg hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-400"
             >
               {type}
               <svg
@@ -152,36 +148,40 @@ export default function Averages() {
           </div>
         </div>
 
-        {/* CSV import */}
+        {/* CSV Import */}
         <div className="absolute bottom-4 right-4 px-4 py-1 flex flex-col items-end bg-slate-900 bg-opacity-80 rounded-lg shadow-lg">
           <input
             type="file"
             accept=".csv"
             ref={fileInputRef}
             onChange={handleImportCSV}
-            className="block text-sm  text-slate-300 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-500 hover:file:bg-blue-700"
+            className="block text-sm font-quick text-slate-300 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-500 hover:file:bg-blue-700"
             style={{ maxWidth: 180 }}
           />
           {importError && <div className="text-red-400 text-xs mt-1">{importError}</div>}
-          <p className="text-xs text-slate-400">import csv: time,type</p>
+          <p className="text-xs font-mont text-slate-400">import csv: time,type</p>
         </div>
       </div>
 
       <div className="space-y-4">
         {averages.length === 0 ? (
-          <p>No averages yet!</p>
+          <p className="font-mont">No averages yet.</p>
         ) : (
           averages.map((average) => (
             <div
               key={average._id}
               className="bg-slate-800 p-4 rounded-lg border border-slate-700 hover:bg-slate-700 transition"
             >
-              <div className="flex justify-between items-center">
-                <div>
-                  <div className="font-semibold text-lg">{average.type}</div>
-                  <div className="text-sm">Time: {average.timeInSeconds}s</div>
+              <div className="flex items-start justify-between gap-4 flex-wrap">
+                <div className="flex-1 min-w-[200px]">
+                  <div className="font-semibold text-2xl">{average.type}</div>
+                  <div className="text-md font-mont text-gray-400 break-words">
+                    {average.timeInSeconds}s
+                  </div>
+                  {average.isPB && (
+                    <Badge variant="default" className="mt-2 inline-block">PB</Badge>
+                  )}
                 </div>
-                {average.isPB && <Badge variant="default">PB</Badge>}
               </div>
             </div>
           ))
@@ -189,4 +189,5 @@ export default function Averages() {
       </div>
     </div>
   );
+
 }

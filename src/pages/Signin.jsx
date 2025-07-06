@@ -52,21 +52,21 @@ export function Signin() {
                     handleSignIn();
                 }}
                 className="bg-slate-800 p-6 md:p-8 w-full max-w-md rounded-2xl shadow-xl border border-slate-600 backdrop-blur-sm flex flex-col gap-5" >
-                <h2 className="text-3xl font-bold text-center text-blue-400 animate-pulse mb-2">
+                <h2 className="text-3xl font-bold text-center font-quick text-blue-400 animate-pulse mb-2">
                     Welcome Back to Cubey
                 </h2>
 
                 <div className="flex flex-col gap-1">
-                    <label htmlFor="email" className="text-sm font-medium text-slate-200">WCA ID or Email</label>
+                    <label htmlFor="email" className="text-sm font-mont font-medium text-slate-200">WCA ID or Email</label>
                     <div className="flex items-center border border-slate-600 rounded-lg h-12 pl-3 focus-within:border-blue-500 transition-all">
-                        <input ref={wcaRef} type="text" placeholder="Enter your WCA ID or Email" className="bg-transparent border-none outline-none text-white px-2 flex-1 h-full"/>
+                        <input ref={wcaRef} type="text" placeholder="Enter your WCA ID or Email" className="bg-transparent font-mont border-none outline-none text-white px-2 flex-1 h-full"/>
                     </div>
                 </div>
 
                 <div className="flex flex-col gap-1">
-                    <label htmlFor="password" className="text-sm font-medium text-slate-200">Password</label>
+                    <label htmlFor="password" className="text-sm font-mont font-medium text-slate-200">Password</label>
                     <div className="flex items-center border border-slate-600 rounded-lg h-12 pl-3 focus-within:border-blue-500 transition-all">
-                        <input ref={passwordRef} type="password" placeholder="Enter your password" className="bg-transparent border-none outline-none text-white px-2 flex-1 h-full"/>
+                        <input ref={passwordRef} type="password" placeholder="Enter your password" className="bg-transparent font-mont border-none outline-none text-white px-2 flex-1 h-full"/>
                     </div>
                 </div>
 
