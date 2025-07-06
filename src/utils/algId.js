@@ -88,17 +88,17 @@ export const algId = {
         "2": ['OLL Parity', 'ollpar', "Rw U2 x Rw U2 Rw U2' Rw' U2 Lw U2 Rw' U2 Rw U2' Rw' U2'"],
     },
     "5x5": {
-        "1": ['L2E Case 1', 'l2e1', " "], 
-        "2": ['L2E Case 2', 'l2e2', " "],
-        "3": ['L2E Case 3', 'l2e3', " "],
-        "4": ['L2E Case 4', 'l2e4', " "],
-        "5": ['L2E Case 5', 'l2e5', " "],
-        "6": ['L2E Case 6', 'l2e6', " "],
-        "7": ['L2E Case 7', 'l2e7', " "],
-        "8": ['L2E Case 8', 'l2e8', " "],
-        "9": ['L2E Case 9', 'l2e9', " "],
-        "10": ['L2E Case 10', 'l2e10', " "],
-        "11": ['L2E Case 11', 'l2e11', " "],
-        "12": ['L2E Case 12', 'l2e12', " "] 
+        "1": ['L2E Case 1', 'l2e1', "Rw' U' R' U R' F R F' Rw"], 
+        "2": ['L2E Case 2', 'l2e2', "Lw U' R' U R' F R F' Lw'"],
+        "3": ['L2E Case 3', 'l2e3', "x' M' U' R' U R' F R F' M"],
+        "4": ['L2E Case 4', 'l2e4', "Rw2 F2 U2 r2 U2 F2 Rw2"],
+        "5": ['L2E Case 5', 'l2e5', "Rw U2 Rw U2 Rw' U2 Rw U2 Lw' U2 Rw U2 Rw' U2 x' Rw' U2 Rw' U2 M'"],
+        "6": ['L2E Case 6', 'l2e6', "Rw U2 Rw U2 Rw' U2 Rw U2 Lw' U2 Lw F2 Rw' F2 Rw' U2 Rw'"],
+        "7": ['L2E Case 7', 'l2e7', "Lw' U2 Lw' U2 F2 Lw' F2 Rw U2 Rw' U2 Lw2"],
+        "8": ['L2E Case 8', 'l2e8', "Lw2 F2 U2 Lw' U2 Lw2 F2 Lw' U2 Lw2 U2 F2 Lw'"],
+        "9": ['L2E Case 9', 'l2e9', "Rw2 F2 U2 Lw' U2 Lw2 F2 Lw' U2 Rw2 U2 F2 Rw"],
+        "10": ['L2E Case 10', 'l2e10', "Rw' U2 Rw2 U2 Rw U2 Rw' U2 Rw U2 Rw2 U2 Rw'"],
+        "11": ['L2E Case 11', 'l2e11', "Rw U2 Rw2 U2 Rw' U2 Rw U2 Rw' U2 Rw2 U2 Rw"],
+        "12": ['L2E Case 12', 'l2e12', "Rw' U2 Rw' U2 B2 Rw' B2 Rw' F2 Lw2 F2 Rw U2 Rw2"] 
     }
 };
