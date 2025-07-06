@@ -167,11 +167,11 @@ export default function Solves() {
             accept=".csv"
             ref={fileInputRef}
             onChange={handleImportCSV}
-            className="block text-sm text-slate-300 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-500 hover:file:bg-blue-100"
+            className="block text-sm text-slate-300 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-500 hover:file:bg-blue-700"
             style={{ maxWidth: 180 }}
           />
           {importError && <div className="text-red-400 text-xs mt-1">{importError}</div>}
-          <p className="text-xs text-slate-400">Import CSV: time,type,scramble</p>
+          <p className="text-xs text-slate-400">import csv: time,type,scramble</p>
         </div>
       </div>
 

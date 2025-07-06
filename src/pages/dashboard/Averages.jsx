@@ -3,6 +3,8 @@ import axios from "../../utils/api";
 import { Input } from "../../components/ui/Input";
 import { Badge } from "../../components/ui/Badge";
 import { AddButton } from "../../components/ui/AddButton";
+import Papa from 'papaparse';
+
 const eventOptions = ['2x2', '3x3', '4x4', '5x5', 'OH', 'Pyraminx', 'Skewb', 'BLD', 'Other'];
 
 export default function Averages() {
@@ -11,6 +13,8 @@ export default function Averages() {
   const [type, setType] = useState('3x3');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef();
+  const [importError, setImportError] = useState("");
+  const fileInputRef = useRef();
 
   const fetchAverages = async () => {
     try {
@@ -44,9 +48,45 @@ export default function Averages() {
       setTime('');
       setType('3x3');
       fetchAverages();
-    } catch (error) {
+    } catch(error) {
       console.error('Failure in adding the averages', error);
     }
+  };
+
+  const handleImportCSV = (e) => {
+    setImportError("");
+    const file = e.target.files[0];
+    if (!file) return;
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (results) => {
+        const rows = results.data;
+        let hasError = false;
+        for (const row of rows) {
+          const { time, type } = row;
+          if (!time || !type) {
+            setImportError("CSV must have 'time' and 'type' columns.");
+            hasError = true;
+            break;
+          }
+          try {
+            await axios.post('/averages', {
+              timeInSeconds: Number(time),
+              type,
+            });
+          } catch (err) {
+            setImportError("Failed to import some averages. Please check your CSV.");
+            hasError = true;
+            break;
+          }
+        }
+        if(!hasError) {
+          fetchAverages();
+        }
+      },
+      error: () => setImportError("Failed to parse CSV file."),
+    });
   };
 
   return (
@@ -55,7 +95,7 @@ export default function Averages() {
         <h2 className="text-2xl font-bold mb-6">Your Averages</h2>
       </div>
 
-      <div className="bg-slate-800 p-4 rounded-lg mb-8">
+      <div className="bg-slate-800 p-4 rounded-lg mb-8 relative">
         <h3 className="text-lg font-semibold mb-2">Add a new ao5</h3>
         <div className="space-y-3">
           <Input
@@ -110,6 +150,20 @@ export default function Averages() {
 
             <AddButton text="Add ao5" onClick={handleAddAverage} />
           </div>
+        </div>
+
+        {/* CSV import */}
+        <div className="absolute bottom-4 right-4 px-4 py-1 flex flex-col items-end bg-slate-900 bg-opacity-80 rounded-lg shadow-lg">
+          <input
+            type="file"
+            accept=".csv"
+            ref={fileInputRef}
+            onChange={handleImportCSV}
+            className="block text-sm  text-slate-300 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-500 hover:file:bg-blue-700"
+            style={{ maxWidth: 180 }}
+          />
+          {importError && <div className="text-red-400 text-xs mt-1">{importError}</div>}
+          <p className="text-xs text-slate-400">import csv: time,type</p>
         </div>
       </div>
 
