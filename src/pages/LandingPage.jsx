@@ -5,6 +5,7 @@ import { TimerIcon } from '../components/ui/TimerIcon';
 import { TrophyIcon } from '../components/ui/TrophyIcon';
 import { LearnIcon } from '../components/ui/LearnIcon';
 import { ImportIcon } from '../components/ui/ImportIcon';
+import { ShareIcon } from '../components/ui/ShareIcon';
 
 export const LandingPage = () => {
   const navigate = useNavigate();
@@ -46,7 +47,14 @@ export const LandingPage = () => {
             <div className="flex items-start gap-3 bg-slate-700 bg-opacity-30 p-3 rounded-lg">
               <TimerIcon />
               <p className="text-base text-slate-100 font-medium font-quick">
-                <span className="text-pink-400">Train smarter</span> — use the built-in timer and grind those Algorithms.
+                <span className="text-red-400">Train smarter</span> — use the built-in timer and grind those Algorithms.
+              </p>
+            </div>
+
+            <div className="flex items-start gap-3 bg-slate-700 bg-opacity-30 p-3 rounded-lg">
+              <ShareIcon />
+              <p className="text-base text-slate-100 font-medium font-quick">
+                <span className="text-orange-400">Share Away</span> — use your unique sharelink to flaunt your PBs across events.
               </p>
             </div>
           </div>
