@@ -1,4 +1,5 @@
 ## Cubey serves the following speedcubing needs:
-- A tracker for your speedcubing records in multiple events
-- For 3x3, a cross trainer for begginners and cross+1 trainer for intermediate to advanced level cubers
-- A way to interact with a sub 9 level cuber (me :) ) 
+- A tracker for your speedcubing records across multiple events.
+- Sharing your best solves with your friends.
+- Algorithm trainer and keeping track of your best time for each alg.
+- Seeking solve critiques/general improvement advice from me (assuming you are solwer than me, which may not be true for some).

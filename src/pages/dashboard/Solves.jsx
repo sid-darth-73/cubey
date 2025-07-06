@@ -103,26 +103,14 @@ export default function Solves() {
       <div className="bg-slate-800 p-4 rounded-lg mb-8 relative">
         <h3 className="text-lg font-semibold mb-2">Add a new solve</h3>
         <div className="space-y-3">
-          <Input
-            value={scramble}
-            onChange={(e) => setScramble(e.target.value)}
-            placeholder="Scramble"
-          />
-          <Input
-            type="number"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            placeholder="Time in seconds"
-          />
+          <Input value={scramble} onChange={(e) => setScramble(e.target.value)} placeholder="Scramble"/>
+
+          <Input type="number" value={time} onChange={(e) => setTime(e.target.value)} placeholder="Time in seconds"/>
+
           <div className="flex items-center gap-2" ref={dropdownRef}>
-            <button
-              type="button"
-              onClick={() => setDropdownOpen((prev) => !prev)}
-              className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-white bg-slate-700 rounded-lg hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-400"
-            >
+            <button type="button" onClick={() => setDropdownOpen((prev) => !prev)} className="inline-flex items-center px-5 py-2.5 text-sm font-medium text-white bg-slate-700 rounded-lg hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-400">
               {type}
-              <svg
-                className="w-2.5 h-2.5 ml-2"
+              <svg className="w-2.5 h-2.5 ml-2"
                 viewBox="0 0 10 6"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -202,7 +190,7 @@ export default function Solves() {
                     <div className="text-sm text-gray-400 break-words">
                       Scramble: {solve.scramble}
                     </div>
-                    <div className="text-sm">Time: {solve.timeInSeconds}s</div>
+                    <div className="text-sm text-amber-300">Time: {solve.timeInSeconds}s</div>
                     {solve.isPB && (
                       <Badge variant="default" className="mt-2 inline-block">PB</Badge>
                     )}
