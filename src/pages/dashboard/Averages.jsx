@@ -3,6 +3,7 @@ import axios from "../../utils/api";
 import { Input } from "../../components/ui/Input";
 import { Badge } from "../../components/ui/Badge";
 import { AddButton } from "../../components/ui/AddButton";
+import { TrashIcon } from "../../components/ui/TrashIcon";
 import Papa from 'papaparse';
 
 const eventOptions = ['2x2', '3x3', '4x4', '5x5', 'OH', 'Pyraminx', 'Skewb', 'BLD', 'Other'];
@@ -50,6 +51,14 @@ export default function Averages() {
       fetchAverages();
     } catch(error) {
       console.error('Failure in adding the averages', error);
+    }
+  };
+  const handleDeleteAverage = async (id)=>{
+    try {
+      await axios.delete(`/averages/${id}`);
+      setAverages((prev) => prev.filter((average) => average._id !== id));
+    } catch (err) {
+      console.error("Failed to delete average:", err);
     }
   };
 
@@ -181,7 +190,13 @@ export default function Averages() {
                   {average.isPB && (
                     <Badge variant="default" className="mt-2 inline-block">PB</Badge>
                   )}
+                  
                 </div>
+                <div className="cursor-pointer" onClick={() => {
+                      if(confirm("Are you sure you want to delete this average?")) {
+                        handleDeleteAverage(average._id);
+                      }
+                  }}><TrashIcon/></div>
               </div>
             </div>
           ))

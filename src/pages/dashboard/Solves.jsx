@@ -6,6 +6,7 @@ import { AddButton } from "../../components/ui/AddButton";
 import { applyScramble } from 'react-rubiks-cube-utils';
 import { Cube2D } from "../../utils/Cube2D"; 
 import { TimerIcon } from "../../components/ui/TimerIcon";
+import { TrashIcon } from "../../components/ui/TrashIcon";
 import Papa from 'papaparse';
 
 const eventOptions = ['2x2', '3x3', '4x4', '5x5', 'OH', 'Pyraminx', 'Skewb', 'BLD', 'Other'];
@@ -42,6 +43,15 @@ export default function Solves() {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  const handleDeleteSolve = async (id)=>{
+    try {
+      await axios.delete(`/solves/${id}`);
+      setSolves((prev) => prev.filter((solve) => solve._id !== id));
+    } catch (err) {
+      console.error("Failed to delete solve:", err);
+    }
+  };
 
   const handleAddSolve = async () => {
     try {
@@ -193,6 +203,13 @@ export default function Solves() {
                     )}
                   </div>
 
+                  {/* delete part */}
+                  <div onClick={() => {
+                      if (confirm("Are you sure you want to delete this solve?")) {
+                        handleDeleteSolve(solve._id);
+                      }
+                    }} className="cursor-pointer"><TrashIcon/></div>
+                    
                   {/* visual cube state */}
                   {isVisualCube && cube && (
                     <div className="w-fit max-w-[100%] overflow-auto">
