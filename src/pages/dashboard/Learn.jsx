@@ -3,7 +3,7 @@ import axios from "../../utils/api";
 import { algId } from "../../utils/algId";
 import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
-
+import { TrashIcon } from "../../components/ui/TrashIcon";
 export default function Learn() {
   const [category, setCategory] = useState("3x3");
   const [subcategory, setSubcategory] = useState("oll");
@@ -235,11 +235,24 @@ export default function Learn() {
           <div className="text-lg mt-1">
             Your Best Time:{" "}
             {bestTime !== null ? (
-              <Badge variant="default">{bestTime.toFixed(2)}s</Badge>
+              <>
+                <Badge variant="default">{bestTime.toFixed(2)}s</Badge>
+                <div className="cursor-pointer" onClick={async () => {
+                    if(confirm("Are you sure you want to reset your best time?")) {
+                      try{
+                        await axios.delete(`/learn/reset/${selectedAlgo[1]}`);
+                        setBestTime(null);
+                      } catch (err) {
+                        console.error("Failed to reset best time:", err);
+                      }
+                    }
+                  }}><TrashIcon/></div>
+              </>
             ) : (
               <span className="text-gray-400">Not yet recorded</span>
             )}
           </div>
+
         </div>
       </div>
 
