@@ -7,9 +7,10 @@ import { applyScramble } from 'react-rubiks-cube-utils';
 import { Cube2D } from "../../utils/Cube2D"; 
 import { TimerIcon } from "../../components/ui/TimerIcon";
 import { TrashIcon } from "../../components/ui/TrashIcon";
+import {scrambleCheck} from "../../utils/scrambleCheck"
 import Papa from 'papaparse';
 
-const eventOptions = ['2x2', '3x3', '4x4', '5x5', 'OH', 'Pyraminx', 'Skewb', 'BLD', 'Other'];
+const eventOptions = ['2x2', '3x3', '4x4', '5x5', '6x6','7x7','OH', 'Pyraminx', 'Skewb', 'BLD', 'Other'];
 
 export default function Solves() {
   const [solves, setSolves] = useState([]);
@@ -54,6 +55,13 @@ export default function Solves() {
   };
 
   const handleAddSolve = async () => {
+    const isVisualCube = ['2x2', '3x3', '4x4', '5x5', '6x6', '7x7'].includes(type);
+
+    if(isVisualCube && !scrambleCheck(scramble, type)) {
+      alert(`Invalid scramble for ${type}. Please check your input.`);
+      return;
+    }
+
     try {
       await axios.post('/solves', {
         scramble,
@@ -67,6 +75,7 @@ export default function Solves() {
       console.error("Add solve failed:", err);
     }
   };
+
 
   const handleImportCSV = (e) => {
     setImportError("");
@@ -175,7 +184,7 @@ export default function Solves() {
           <p className="font-mont">No solves yet.</p>
         ) : (
           solves.map((solve) => {
-            const isVisualCube = ['3x3', '4x4', '5x5'].includes(solve.type);
+            const isVisualCube = ['2x2','3x3', '4x4', '5x5','6x6','7x7'].includes(solve.type);
             let cube = null;
 
             if (isVisualCube && solve.scramble) {
