@@ -7,7 +7,7 @@ export function PublicProfile() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(`http://localhost:3002/pb/${shareLink}`)
+    fetch(`https://api-cubey.onrender.com/pb/${shareLink}`)
       .then((res) => {
         if (!res.ok) throw new Error("Not found");
         return res.json();

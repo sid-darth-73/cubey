@@ -6,7 +6,7 @@ import { Menu, X, Copy, ExternalLink } from 'lucide-react';
 export function DashboardLayout() {
   const user = localStorage.getItem('user');
   const shareLink = localStorage.getItem('shareLink');
-  const publicUrl = `http://localhost:5173/${shareLink}`;
+  const publicUrl = `https://cubey-nine.vercel.app/${shareLink}`;
 
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);

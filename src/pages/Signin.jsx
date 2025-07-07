@@ -16,7 +16,7 @@ export function Signin() {
         }
 
         try {
-            const res = await fetch("http://localhost:3002/auth/signin", {
+            const res = await fetch("https://api-cubey.onrender.com/auth/signin", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ wcaIdOrEmail, password }),
