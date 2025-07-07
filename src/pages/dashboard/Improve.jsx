@@ -12,14 +12,14 @@ export function Improve() {
           </h2>
 
           <p className="text-lg font-mont text-slate-200 text-center max-w-lg">
-            Want to break your PBs or improve your averages? Connect with me for personalized feedback, tips, and detailed solve critiques.
+            Want to break your PBs or improve your averages? Connect with me for personalized feedback, tips, and detailed solve critiques
           </p>
 
           <div className="w-full flex flex-col gap-4">
             <div className="flex items-start gap-3 bg-slate-700 bg-opacity-30 p-3 rounded-lg">
               <span className="text-blue-400 text-xl font-bold"><ChartIcon></ChartIcon></span>
               <p className="text-base text-slate-100 font-medium font-quick">
-                Cubing for over <span className="text-blue-300">10 years</span> — deep experience across all events.
+                I have been in speedcubing for over <span className="text-blue-300">10 years</span> — deep experience across all events
               </p>
             </div>
 
@@ -46,13 +46,19 @@ export function Improve() {
             </div>
           </div>
 
-          {/* contact */}
+          {/* contact  */ }
           <div className="bg-slate-700 rounded-lg p-4 w-full text-center mt-2">
             <span className="text-slate-300 text-sm uppercase tracking-wide font-bold">Get in Touch</span>
             <div className="text-blue-300 font-mono text-lg mt-2 flex justify-center gap-2">
-              <div onClick={() => window.open("https://discord.com/users/yourDiscordID", "_blank")} className="cursor-pointer hover:scale-110 transition"><img src={`/public/discord_icon.svg`} alt="discord" className="w-5.5 h-6" /></div>
-              <div onClick={() => window.open("https://discord.com/users/yourDiscordID", "_blank")} className="cursor-pointer hover:scale-110 transition"><img src={`/public/insta_icon.svg`} alt="insta" className="w-7 h-6" /></div>
-              <div onClick={() => window.open("https://discord.com/users/yourDiscordID", "_blank")} className="cursor-pointer hover:scale-110 transition"><img src={`/public/gmail_icon.svg`} alt="mail" className="w-4.5 h-5" /></div>
+              <a href="https://discord.com/users/771914664836726795" target="_blank" rel="noopener noreferrer">
+                <img src={`/public/discord_icon.svg`} alt="mail" className="w-5 h-5 hover:scale-110 transition cursor-pointer" />
+              </a>
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
+                <img src={`/public/insta_icon.svg`} alt="mail" className="w-5 h-5 hover:scale-110 transition cursor-pointer" />
+              </a>
+              <a href="https://mail.google.com/mail/?view=cm&fs=1&to=siddharthraj532@gmail.com" target="_blank" rel="noopener noreferrer">
+                <img src={`/public/gmail_icon.svg`} alt="mail" className="w-4.5 h-4 hover:scale-110 transition cursor-pointer" />
+              </a>
             </div>
           </div>
           </div>
