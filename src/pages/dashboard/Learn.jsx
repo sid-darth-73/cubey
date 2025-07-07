@@ -202,21 +202,21 @@ export default function Learn() {
         <div className="w-24 h-24 flex-shrink-0">
           {selectedAlgo?.[1]?.startsWith("oll") && selectedAlgo[1].length <= 5 && (
             <img
-              src={`/public/oll/svg/${selectedAlgo[1][3]}${selectedAlgo[1].length === 5 ? selectedAlgo[1][4] : ""}.svg`}
+              src={`/oll/svg/${selectedAlgo[1][3]}${selectedAlgo[1].length === 5 ? selectedAlgo[1][4] : ""}.svg`}
               alt="OLL visual"
               className="w-full h-full"
             />
           )}
           {selectedAlgo?.[1]?.startsWith("pll_") && (
             <img
-              src={`/public/pll-arrows/svg/${selectedAlgo[1]}.svg`}
+              src={`/pll-arrows/svg/${selectedAlgo[1]}.svg`}
               alt="PLL visual"
               className="w-full h-full"
             />
           )}
           {(selectedAlgo?.[1]?.startsWith("pllpar") || selectedAlgo?.[1]?.startsWith("ollpar")) && (
             <img
-              src={`/public/parity/${selectedAlgo[1]}.png`}
+              src={`/parity/${selectedAlgo[1]}.png`}
               alt="4x4 parity"
               className="w-full h-full"
             />

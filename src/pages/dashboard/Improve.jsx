@@ -51,13 +51,13 @@ export function Improve() {
             <span className="text-slate-300 text-sm uppercase tracking-wide font-bold">Get in Touch</span>
             <div className="text-blue-300 font-mono text-lg mt-2 flex justify-center gap-2">
               <a href="https://discord.com/users/771914664836726795" target="_blank" rel="noopener noreferrer">
-                <img src={`/public/discord_icon.svg`} alt="mail" className="w-5 h-5 hover:scale-110 transition cursor-pointer" />
+                <img src={`/discord_icon.svg`} alt="mail" className="w-5 h-5 hover:scale-110 transition cursor-pointer" />
               </a>
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">
-                <img src={`/public/insta_icon.svg`} alt="mail" className="w-5 h-5 hover:scale-110 transition cursor-pointer" />
+                <img src={`/insta_icon.svg`} alt="mail" className="w-5 h-5 hover:scale-110 transition cursor-pointer" />
               </a>
               <a href="https://mail.google.com/mail/?view=cm&fs=1&to=siddharthraj532@gmail.com" target="_blank" rel="noopener noreferrer">
-                <img src={`/public/gmail_icon.svg`} alt="mail" className="w-4.5 h-4 hover:scale-110 transition cursor-pointer" />
+                <img src={`/gmail_icon.svg`} alt="mail" className="w-4.5 h-4 hover:scale-110 transition cursor-pointer" />
               </a>
             </div>
           </div>
