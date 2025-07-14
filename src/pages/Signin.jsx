@@ -1,12 +1,13 @@
 import { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthButton } from "../components/ui/AuthButton";
+import { Spinner } from "../components/ui/Spinner";
 export function Signin() {
     const wcaRef = useRef(null);
     const passwordRef = useRef(null);
     const navigate = useNavigate();
     const [error, setError] = useState("");
-
+    const [loading, setLoading] = useState(false)
     async function handleSignIn() {
         const wcaIdOrEmail = wcaRef.current?.value?.trim();
         const password = passwordRef.current?.value;
@@ -16,7 +17,8 @@ export function Signin() {
         }
 
         try {
-            const res = await fetch("https://api-cubey.onrender.com/auth/signin", {
+            setLoading(true)
+            const res = await fetch("https://api-cubey.onrender.com/auth/signin", { // "http://localhost:3002/auth/signin"
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ wcaIdOrEmail, password }),
@@ -71,8 +73,7 @@ export function Signin() {
                 </div>
 
                 {error && <div className="text-red-400 text-sm mt-1">{error}</div>}
-
-                <AuthButton onClick={handleSignIn} text="Sign In" />
+                <AuthButton onClick={handleSignIn} text="Sign in" loading={loading}/>
                 
                 <p className="text-sm text-center text-slate-300">
                     Don't have an account?{" "}

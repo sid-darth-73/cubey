@@ -1,4 +1,5 @@
-export const AuthButton = ({ onClick, text }) => {
+import { Spinner } from "./Spinner";
+export const AuthButton = ({ onClick, text,loading }) => {
   return (
     <button
       type="submit"
@@ -11,7 +12,9 @@ export const AuthButton = ({ onClick, text }) => {
         hover:translate-y-[-1px] hover:border-b-[4pt]
         active:translate-y-0 active:border-b active:shadow-[inset_0_4px_3px_-2px_#386fff,0_4px_5px_-3px_#0000]"
     >
-      {text}
+
+        <div className="flex items-center justify-center">{loading ? <Spinner /> : text}</div>
+      
     </button>
   );
 };

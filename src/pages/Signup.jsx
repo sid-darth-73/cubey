@@ -6,6 +6,7 @@ export function Signup() {
     const passwordRef = useRef(null);
     const navigate = useNavigate();
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false)
     async function handleSignUp() {
         const wcaIdOrEmail = wcaRef.current?.value?.trim();
         const password = passwordRef.current?.value;
@@ -14,7 +15,8 @@ export function Signup() {
             setError("All fields are required."); return;
         }
         try {
-            const res = await fetch("https://api-cubey.onrender.com/auth/signup", {
+            setLoading(true)
+            const res = await fetch("https://api-cubey.onrender.com/auth/signup", { // "http://localhost:3002/auth/signup"
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ wcaIdOrEmail, password }),
@@ -74,7 +76,7 @@ export function Signup() {
 
                 {error && <div className="text-red-400 text-sm mt-1">{error}</div>}
 
-                <AuthButton onClick={handleSignUp} text="Sign Up" />
+                <AuthButton onClick={handleSignUp} text="Sign up" loading={loading}/>
 
                 <p className="text-sm text-center text-slate-300">
                     Already have an account?{" "}
