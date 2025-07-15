@@ -24,27 +24,23 @@ export function Improve() {
             </div>
 
             <div className="flex items-start gap-3 bg-slate-700 bg-opacity-30 p-3 rounded-lg">
-              <span className="text-green-400 text-xl font-bold">
-                <TimerIcon />
-              </span>
-              <div className="text-base text-slate-100 font-medium font-quick space-y-1">
-                <div>
-                  Averages: <span className="text-green-300">8 s</span> (3x3), <span className="text-green-300">36 s</span> (4x4), <span className="text-green-300">1:05 min</span> (5x5)
-                </div>
-                <div>
-                  Singles: <span className="text-green-300">5 s</span> (3x3), <span className="text-green-300">29 s</span> (4x4), <span className="text-green-300">58 s</span> (5x5)
-                </div>
-              </div>
-            </div>
-
-
-            <div className="flex items-start gap-3 bg-slate-700 bg-opacity-30 p-3 rounded-lg">
               <span className="text-yellow-400 text-xl font-bold"><TrophyIcon></TrophyIcon></span>
               <p className="text-base text-slate-100 font-medium font-quick">
                 Podiumed at <span className="text-yellow-300">every competition</span> I've attended
               </p>
             </div>
+            <div className="flex items-start gap-3 bg-slate-700 bg-opacity-30 p-3 rounded-lg">
+              <span className="text-green-400 text-xl font-bold">
+                <TimerIcon />
+              </span>
+              <div className="text-base text-slate-100 font-medium font-quick space-y-1">
+                <div>
+                  <a href="https://cubey-nine.vercel.app/VzTIe9SbsVx-" target="_blank" className="underline text-green-400">My Cubey profile</a>
+                </div>
+              </div>
+            </div>
           </div>
+          
 
           {/* contact  */ }
           <div className="bg-slate-700 rounded-lg p-4 w-full text-center mt-2">
