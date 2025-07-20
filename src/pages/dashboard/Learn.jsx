@@ -16,7 +16,6 @@ export default function Learn() {
   
   const [timerState, setTimerState] = useState('idle'); // 'idle', 'ready', 'running'
   
-  // --- FIX: Use a ref to track the current timer state to avoid stale closures in event handlers ---
   const timerStateRef = useRef(timerState);
   useEffect(() => {
     timerStateRef.current = timerState;
@@ -25,7 +24,7 @@ export default function Learn() {
   const timeRef = useRef(0);
   const intervalRef = useRef(null);
   const [randomMode, setRandomMode] = useState(false);
-
+  // random alg selection logic
   const setRandomAlgorithm = useCallback(() => {
     const categories = Object.keys(algId);
     const randomCategory = categories[Math.floor(Math.random() * categories.length)];
@@ -82,7 +81,7 @@ export default function Learn() {
       } catch (err) {
         console.error("Failed to update best time:", err);
       } finally {
-        if (randomMode) {
+        if(randomMode) {
           setRandomAlgorithm();
         }
       }
@@ -113,7 +112,6 @@ export default function Learn() {
     handleTimerFinish(timeRef.current);
   }, [handleTimerFinish]);
 
-  // --- FIX: Keyboard event handlers now use the ref to get the current state ---
   useEffect(() => {
     const handleKeyDown = (e) => {
       if(e.code === "Space") {
@@ -145,9 +143,8 @@ export default function Learn() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [readyTimer, startTimer, stopTimer]); // Dependencies are stable callbacks
+  }, [readyTimer, startTimer, stopTimer]);
 
-  // --- FIX: Touch handlers are memoized and also use the ref ---
   const handleTouchStart = useCallback((e) => {
     e.preventDefault();
     if (timerStateRef.current === 'running') {
@@ -180,26 +177,23 @@ export default function Learn() {
       case 'ready':
         return 'Release to start';
       case 'running':
-        return <><span className="bg-slate-700 px-2 py-0.5 rounded">Stop</span></>;
+        return <><span className="bg-slate-700 px-2 py-1 rounded">Stop</span></>;
       default:
-        return <>Hold to <span className="bg-slate-700 px-2 py-0.5 rounded">Start</span></>;
+        return <>Hold to <span className="bg-slate-700 px-2 py-1 rounded">Start</span></>;
     }
   };
 
-
   return (
-    <div className="p-4 text-white">
-      <div className="bg-slate-800 p-4 rounded-lg mb-6">
-        {/* dropdowns*/}
-        <div className="flex flex-wrap gap-4 mb-4 items-center font-quick text-sm">
-          <div className="flex-1 min-w-[150px]">
+    <div className="bg-slate-900 text-white min-h-screen flex flex-col p-2 sm:p-4">
+      <div className="bg-slate-800 p-3 sm:p-4 rounded-lg mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 mb-4 font-quick text-sm">
+          <div>
             <label className="block mb-1 text-slate-300">Category</label>
             <select
               value={category}
               onChange={(e) => {
                 const newCategory = e.target.value;
                 setCategory(newCategory);
-
                 if(newCategory === "3x3") {
                   const defaultSub = Object.keys(algId["3x3"])[0];
                   const defaultKey = Object.keys(algId["3x3"][defaultSub])[0];
@@ -222,7 +216,7 @@ export default function Learn() {
           </div>
 
           {category === "3x3" && (
-            <div className="flex-1 min-w-[150px]">
+            <div>
               <label className="block mb-1 text-slate-300">Subcategory</label>
               <select
                 value={subcategory}
@@ -243,7 +237,7 @@ export default function Learn() {
             </div>
           )}
 
-          <div className="flex-1 min-w-[150px]">
+          <div className="sm:col-start-3">
             <label className="block mb-1 text-slate-300">Algorithm</label>
             <select
               value={algoKey}
@@ -265,8 +259,7 @@ export default function Learn() {
           </div>
         </div>
 
-        {/* image and notation */}
-        <div className="flex items-center gap-6 mb-4">
+        <div className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-4 sm:gap-6 mb-4">
           <div className="w-24 h-24 flex-shrink-0">
             {selectedAlgo?.[1]?.startsWith("oll") && selectedAlgo[1].length <= 5 && (
               <img
@@ -299,11 +292,11 @@ export default function Learn() {
           </div>
 
           <div className="flex flex-col justify-center font-quick">
-            <div className="text-2xl text-gray-400">{selectedAlgo?.[2]}</div>
-            <div className="text-lg mt-1">
+            <div className="text-xl sm:text-2xl text-gray-400">{selectedAlgo?.[2]}</div>
+            <div className="text-base sm:text-lg mt-2">
               Your Best Time:{" "}
               {bestTime !== null ? (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center justify-center sm:justify-start gap-2 mt-1">
                   <Badge variant="default">{bestTime.toFixed(2)}s</Badge>
                   <div className="cursor-pointer" onClick={async () => {
                       if(confirm("Are you sure you want to reset your best time?")) {
@@ -323,30 +316,29 @@ export default function Learn() {
           </div>
         </div>
 
-        {/* randomizer button part */}
         <Button
           onClick={() => {
             setRandomMode(!randomMode);
-            if (!randomMode) {
+            if(!randomMode) {
               setRandomAlgorithm();
             }
           }}
           variant={randomMode ? "primary" : "secondary"}
           text={randomMode ? "Stop Randomizer" : "Start Randomizer"}
-          className="font-quick"
+          className="font-quick w-full sm:w-auto"
         />
       </div>
 
-      {/* timer section*/}
+      {/* --- timer --- */}
       <div 
-        className="bg-slate-900 p-14 rounded-lg text-center select-none cursor-pointer"
+        className="bg-gradient-to-br from-slate-700 to-slate-900 flex-grow rounded-lg flex flex-col justify-center items-center text-center select-none cursor-pointer p-4"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        <div className={`text-8xl font-bold font-mono transition-colors duration-200 ${getTimerColor()}`}>
+        <div className={`text-7xl sm:text-8xl font-bold font-mono transition-colors duration-200 ${getTimerColor()}`}>
           {time.toFixed(2)}
         </div>
-        <div className="mt-4 text-gray-400 text-lg font-quick h-6">
+        <div className="mt-4 text-gray-400 text-lg font-quick h-8">
           {getHelperText()}
         </div>
       </div>
