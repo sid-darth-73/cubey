@@ -100,75 +100,65 @@ export default function Averages() {
 
     return (
     <div>
-      <div className="bg-slate-800 p-4 rounded-lg mb-8 relative">
-        <h3 className="text-2xl font-mont text-center font-semibold mb-2">Add a new ao5</h3>
-        <div className="space-y-3">
-          <Input
-            type="number"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-            placeholder="Time in seconds"
-          />
+      <div className="bg-slate-800 p-4 rounded-lg mb-8">
+        <h3 className="text-2xl font-mont text-center font-semibold mb-4">Add a new ao5</h3>
+        <div className="flex flex-col md:flex-row gap-6 items-start">
 
-          <div className="flex items-center gap-2" ref={dropdownRef}>
-            <button
-              type="button"
-              onClick={() => setDropdownOpen((prev) => !prev)}
-              className="inline-flex items-center px-5 py-2.5 text-sm font-quick font-medium text-white bg-slate-700 rounded-lg hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-400"
-            >
-              {type}
-              <svg
-                className="w-2.5 h-2.5 ml-2"
-                viewBox="0 0 10 6"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+          {/* --- inputs--- */}
+          <div className="space-y-3 flex-grow w-full">
+            <Input
+              type="number"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              placeholder="Time in seconds"
+            />
+            <div className="flex items-center gap-2" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() => setDropdownOpen((prev) => !prev)}
+                className="inline-flex items-center px-5 py-2.5 text-sm font-quick font-medium text-white bg-slate-700 rounded-lg hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-400"
               >
-                <path
-                  d="M1 1L5 5L9 1"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
+                {type}
+                <svg className="w-2.5 h-2.5 ml-2" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
 
-            {dropdownOpen && (
-              <div className="absolute mt-12 z-20 bg-white dark:bg-slate-700 rounded-lg shadow w-36">
-                <ul className="py-2 text-sm text-gray-700 dark:text-gray-200">
-                  {eventOptions.map((ev) => (
-                    <li key={ev}>
-                      <button
-                        onClick={() => {
-                          setType(ev);
-                          setDropdownOpen(false);
-                        }}
-                        className="w-full text-left block px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-600 dark:hover:text-white"
-                      >
-                        {ev}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <AddButton text="Add ao5" onClick={handleAddAverage} />
+              {dropdownOpen && (
+                <div className="absolute mt-12 z-20 bg-white dark:bg-slate-700 rounded-lg shadow w-36">
+                  <ul className="py-2 text-sm text-gray-700 dark:text-gray-200">
+                    {eventOptions.map((ev) => (
+                      <li key={ev}>
+                        <button
+                          onClick={() => {
+                            setType(ev);
+                            setDropdownOpen(false);
+                          }}
+                          className="w-full text-left block px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-600 dark:hover:text-white"
+                        >
+                          {ev}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <AddButton text="Add ao5" onClick={handleAddAverage} />
+            </div>
           </div>
-        </div>
 
-        {/* CSV Import */}
-        <div className="absolute bottom-4 right-4 px-4 py-1 flex flex-col items-end bg-slate-900 bg-opacity-80 rounded-lg shadow-lg">
-          <input
-            type="file"
-            accept=".csv"
-            ref={fileInputRef}
-            onChange={handleImportCSV}
-            className="block text-sm font-quick text-slate-300 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-500 hover:file:bg-blue-700"
-            style={{ maxWidth: 180 }}
-          />
-          {importError && <div className="text-red-400 text-xs mt-1">{importError}</div>}
-          <p className="text-xs font-mont text-slate-400">import csv: time,type</p>
+          {/* --- csv import --- */}
+          <div className="w-full md:w-auto p-3 flex flex-col items-center md:items-end bg-slate-900/80 rounded-lg shadow-lg flex-shrink-0">
+            <input
+              type="file"
+              accept=".csv"
+              ref={fileInputRef}
+              onChange={handleImportCSV}
+              className="block w-full max-w-xs md:max-w-[180px] text-sm font-quick text-slate-300 file:mr-2 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-600 hover:file:bg-blue-200"
+            />
+            {importError && <div className="text-red-400 text-xs mt-1">{importError}</div>}
+            <p className="text-xs font-mont text-slate-400 mt-1">import csv: time,type</p>
+          </div>
         </div>
       </div>
 
@@ -190,7 +180,6 @@ export default function Averages() {
                   {average.isPB && (
                     <Badge variant="default" className="mt-2 inline-block">PB</Badge>
                   )}
-                  
                 </div>
                 <div className="cursor-pointer" onClick={() => {
                       if(confirm("Are you sure you want to delete this average?")) {
@@ -204,5 +193,6 @@ export default function Averages() {
       </div>
     </div>
   );
+
 
 }
