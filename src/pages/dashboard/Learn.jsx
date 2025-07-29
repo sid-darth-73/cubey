@@ -284,7 +284,7 @@ export default function Learn() {
             )}
             {selectedAlgo?.[1]?.startsWith("l2e") && (
               <img
-                src={`/public/l2e/${selectedAlgo[1]}.png`}
+                src={`/l2e/${selectedAlgo[1]}.png`}
                 alt="5x5 L2E case"
                 className="w-full h-full"
               />
