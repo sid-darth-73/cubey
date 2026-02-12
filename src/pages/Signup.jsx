@@ -1,38 +1,32 @@
 import { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthButton } from "../components/ui/AuthButton";
+import api from "../utils/api";
 export function Signup() {
-    const wcaRef = useRef(null);
+    const emailRef = useRef(null);
     const passwordRef = useRef(null);
     const navigate = useNavigate();
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false)
     async function handleSignUp() {
-        const wcaIdOrEmail = wcaRef.current?.value?.trim();
+        const email = emailRef.current?.value?.trim();
         const password = passwordRef.current?.value;
 
-        if(!wcaIdOrEmail || !password) {
+        if(!email || !password) {
             setError("All fields are required."); return;
         }
         try {
             setLoading(true)
-            const res = await fetch("https://api-cubey.onrender.com/auth/signup", { // "http://localhost:3002/auth/signup"
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ wcaIdOrEmail, password }),
-            });
+            const res = await api.post("/auth/signup", { email, password });
 
-            const data = await res.json();
-            if(!res.ok) {
-                setError(data.message || "Signup failed"); return;
-            }
-
+            const data = res.data;
             localStorage.setItem("token", data.token);
             localStorage.setItem("shareLink", data.shareLink);
-            localStorage.setItem("user", wcaIdOrEmail);
+            localStorage.setItem("user", email);
             navigate("/dashboard");
         } catch(err) {
-            setError("Network error. Try again.");
+            setError(err.response?.data?.message || "Signup failed");
+            setLoading(false);
         }
     }
 
@@ -63,7 +57,7 @@ export function Signup() {
                 <div className="flex flex-col gap-1">
                     <label htmlFor="email" className="text-sm font-medium font-mont text-slate-200">WCA ID or Email</label>
                     <div className="flex items-center border border-slate-600 rounded-lg h-12 pl-3 focus-within:border-blue-500 transition-all">
-                        <input ref={wcaRef} type="text" placeholder="Enter your WCA ID or Email" className="bg-transparent font-mont border-none outline-none text-white px-2 flex-1 h-full"/>
+                        <input ref={emailRef} type="text" placeholder="Enter your WCA ID or Email" className="bg-transparent font-mont border-none outline-none text-white px-2 flex-1 h-full"/>
                     </div>
                 </div>
 

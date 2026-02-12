@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import api from "../utils/api";
 
 export function PublicProfile() {
   const { shareLink } = useParams();
@@ -7,12 +8,8 @@ export function PublicProfile() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(`https://api-cubey.onrender.com/pb/${shareLink}`) // "http://localhost:3002/pb/${shareLink}"
-      .then((res) => {
-        if (!res.ok) throw new Error("Not found");
-        return res.json();
-      })
-      .then(setData)
+    api.get(`/pb/${shareLink}`)
+      .then((res) => setData(res.data))
       .catch(() => setError("Profile not found"));
   }, [shareLink]);
 

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: 'https://api-cubey.onrender.com', // "http://localhost:3002"
+  baseURL:  "http://localhost:3002" //'https://api-cubey.onrender.com'
 });
 
 instance.interceptors.request.use((config) => {
