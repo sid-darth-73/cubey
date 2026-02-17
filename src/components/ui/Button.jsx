@@ -1,51 +1,39 @@
-import React from "react";
+import React from 'react';
 
-const sizeStyles = {
-  md: "px-4 py-2 text-md rounded-md",
-  lg: "px-6 py-4 text-xl rounded-xl",
-  sm: "px-2 py-1 text-sm rounded-sm",
-};
-
-const variantStyles = {
-  primary: "bg-[#7164c0] text-white",
-  secondary: "bg-[#d9ddee] text-[#9492db]",
-};
-
-const defaultStyle = "font-normal cursor-pointer";
-
-export function Button({
-  variant = "primary",
-  size = "md",
-  startIcon: StartIcon,
-  endIcon,
-  text,
-  onClick,
-  fullWidth = false,
+export const Button = ({ 
+  children, 
+  variant = 'primary', 
+  size = 'md', 
+  className = '', 
   loading = false,
-}) {
+  ...props 
+}) => {
+  const baseStyles = "inline-flex items-center justify-center rounded-lg font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-background disabled:opacity-50 disabled:pointer-events-none";
+  
+  const variants = {
+    primary: "bg-primary text-white hover:bg-primary-hover focus:ring-primary",
+    secondary: "bg-surface hover:bg-surface-hover text-text-main border border-border focus:ring-secondary",
+    ghost: "hover:bg-surface-hover text-text-main hover:text-white focus:ring-secondary",
+    danger: "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
+  };
+
+  const sizes = {
+    sm: "h-8 px-3 text-sm",
+    md: "h-10 px-4 py-2",
+    lg: "h-12 px-6 text-lg",
+    icon: "h-10 w-10 p-2",
+  };
+
   return (
     <button
-      onClick={onClick}
+      className={`${baseStyles} ${variants[variant]} ${sizes[size]} ${className} cursor-pointer active:scale-95 transition-all duration-200 shadow-sm hover:shadow-md`}
       disabled={loading}
-      className={
-        sizeStyles[size] +
-        " " +
-        variantStyles[variant] +
-        " " +
-        defaultStyle +
-        (fullWidth ? " w-full flex justify-center items-center" : "") +
-        (loading ? " opacity-45" : "")
-      }
+      {...props}
     >
-      <div className="flex items-center">
-        {StartIcon && (
-          <span className="text-xs">
-            <StartIcon size={size} />
-          </span>
-        )}
-        <div className="pl-2 pr-2">{text}</div>
-        {endIcon}
-      </div>
+      {loading ? (
+        <span className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+      ) : null}
+      {children}
     </button>
   );
-}
+};

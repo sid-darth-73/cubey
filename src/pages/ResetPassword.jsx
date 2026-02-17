@@ -1,7 +1,10 @@
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthButton } from "../components/ui/AuthButton";
+import { Button } from "../components/ui/Button";
+import { Input } from "../components/ui/Input";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
 import api from "../utils/api";
+import { KeyRound, Mail, ShieldCheck, Lock } from 'lucide-react';
 
 export function ResetPassword() {
     const navigate = useNavigate();
@@ -87,101 +90,124 @@ export function ResetPassword() {
     };
 
     const handleSubmit = (e) => {
-        e.preventDefault();
+        if(e) e.preventDefault();
         if (step === 1) handleRequestOtp();
         if (step === 2) handleVerifyOtp();
         if (step === 3) handleChangePassword();
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-900 via-slate-800 to-gray-900 text-white px-4">
-            <form onSubmit={handleSubmit} className="bg-slate-800 p-6 md:p-8 w-full max-w-md rounded-2xl shadow-xl border border-slate-600 backdrop-blur-sm flex flex-col gap-5">
-                <h2 className="text-3xl font-bold text-center font-quick text-blue-400 animate-pulse mb-2">
-                    {step === 1 && "Reset Password"}
-                    {step === 2 && "Enter OTP"}
-                    {step === 3 && "New Password"}
-                </h2>
+        <div className="flex items-center justify-center min-h-screen bg-[#0f172a] text-white px-4 relative overflow-hidden">
+             {/* Background Decor */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                <div className="absolute -top-[20%] -right-[10%] w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-3xl opacity-50" />
+                <div className="absolute top-[40%] -left-[10%] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-3xl opacity-30" />
+            </div>
 
-                {message && <div className="text-green-400 text-sm text-center font-medium bg-green-900/30 p-2 rounded">{message}</div>}
-                
-                {step === 1 && (
-                    <div className="flex flex-col gap-1 fade-in">
-                        <label className="text-sm font-mont font-medium text-slate-200">Email Address</label>
-                        <div className="flex items-center border border-slate-600 rounded-lg h-12 pl-3 focus-within:border-blue-500 transition-all">
-                            <input 
-                                ref={emailRef} 
-                                type="email" 
-                                placeholder="Enter your email" 
-                                className="bg-transparent font-mont border-none outline-none text-white px-2 flex-1 h-full"
-                                autoFocus
-                            />
-                        </div>
+            <Card className="w-full max-w-md relative z-10 border-white/10 bg-surface/50">
+                <CardHeader>
+                    <div className="mx-auto w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center mb-4 shadow-lg shadow-blue-500/20">
+                        {step === 1 && <Mail size={24} className="text-white" />}
+                        {step === 2 && <KeyRound size={24} className="text-white" />}
+                        {step === 3 && <ShieldCheck size={24} className="text-white" />}
                     </div>
-                )}
+                    <CardTitle className="text-center text-2xl mb-2">
+                        {step === 1 && "Reset Password"}
+                        {step === 2 && "Enter Code"}
+                        {step === 3 && "New Password"}
+                    </CardTitle>
+                     <p className="text-center text-slate-400 text-sm">
+                        {step === 1 && "Enter your email to receive an OTP"}
+                        {step === 2 && `We sent a code to ${email}`}
+                        {step === 3 && "Secure your account with a new password"}
+                    </p>
+                </CardHeader>
 
-                {step === 2 && (
-                    <div className="flex flex-col gap-1 fade-in">
-                        <label className="text-sm font-mont font-medium text-slate-200">OTP Code</label>
-                        <div className="flex items-center border border-slate-600 rounded-lg h-12 pl-3 focus-within:border-blue-500 transition-all">
-                            <input 
-                                ref={otpRef} 
-                                type="text" 
-                                placeholder="Enter 6-digit OTP" 
-                                className="bg-transparent font-mont border-none outline-none text-white px-2 flex-1 h-full tracking-widest text-center text-lg"
-                                autoFocus
-                            />
-                        </div>
-                        <p className="text-xs text-slate-400 mt-1 text-center">
-                            Sent to {email}. <span className="text-blue-400 cursor-pointer hover:underline" onClick={() => setStep(1)}>Wrong email?</span>
-                        </p>
-                    </div>
-                )}
+                <CardContent>
+                    <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+                        
+                        {message && (
+                            <div className={`text-sm text-center font-medium p-2 rounded ${message.includes("success") ? "bg-green-500/20 text-green-300" : "bg-blue-500/20 text-blue-300"}`}>
+                                {message}
+                            </div>
+                        )}
 
-                {step === 3 && (
-                    <div className="flex flex-col gap-3 fade-in">
-                        <div className="flex flex-col gap-1">
-                            <label className="text-sm font-mont font-medium text-slate-200">New Password</label>
-                            <div className="flex items-center border border-slate-600 rounded-lg h-12 pl-3 focus-within:border-blue-500 transition-all">
-                                <input 
-                                    ref={newPasswordRef} 
-                                    type="password" 
-                                    placeholder="New password" 
-                                    className="bg-transparent font-mont border-none outline-none text-white px-2 flex-1 h-full"
+                        {step === 1 && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                                <Input 
+                                    ref={emailRef} 
+                                    type="email" 
+                                    label="Email Address"
+                                    placeholder="Enter your email" 
                                     autoFocus
                                 />
                             </div>
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <label className="text-sm font-mont font-medium text-slate-200">Confirm Password</label>
-                            <div className="flex items-center border border-slate-600 rounded-lg h-12 pl-3 focus-within:border-blue-500 transition-all">
-                                <input 
+                        )}
+
+                        {step === 2 && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                                <div className="space-y-1">
+                                    <Input 
+                                        ref={otpRef} 
+                                        type="text" 
+                                        label="OTP Code"
+                                        placeholder="Enter 6-digit code" 
+                                        className="text-center tracking-widest text-lg font-mono"
+                                        autoFocus
+                                    />
+                                    <div className="flex justify-end">
+                                        <button 
+                                            type="button"
+                                            onClick={() => setStep(1)} 
+                                            className="text-xs text-blue-400 hover:text-blue-300 hover:underline transition-colors"
+                                        >
+                                            Change email?
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {step === 3 && (
+                            <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                                <Input 
+                                    ref={newPasswordRef} 
+                                    type="password" 
+                                    label="New Password"
+                                    placeholder="Enter new password" 
+                                    autoFocus
+                                />
+                                <Input 
                                     ref={confirmPasswordRef} 
                                     type="password" 
+                                    label="Confirm Password"
                                     placeholder="Confirm new password" 
-                                    className="bg-transparent font-mont border-none outline-none text-white px-2 flex-1 h-full"
                                 />
                             </div>
+                        )}
+
+                        {error && <div className="text-red-400 text-sm text-center">{error}</div>}
+
+                        <Button 
+                            loading={loading} 
+                            className="w-full mt-2"
+                            onClick={() => handleSubmit()}
+                        >
+                            {step === 1 ? "Send Code" : step === 2 ? "Verify Code" : "Reset Password"}
+                        </Button>
+
+                         <div className="text-center mt-2">
+                            <button 
+                                type="button" 
+                                onClick={() => navigate("/signin")} 
+                                className="text-sm text-slate-400 hover:text-white transition-colors"
+                            >
+                                Back to <span className="text-blue-400">Sign In</span>
+                            </button>
                         </div>
-                    </div>
-                )}
-
-                {error && <div className="text-red-400 text-sm mt-1 text-center">{error}</div>}
-
-                <AuthButton 
-                    text={
-                        step === 1 ? "Send OTP" : 
-                        step === 2 ? "Verify OTP" : 
-                        "Reset Password"
-                    } 
-                    loading={loading}
-                />
-
-                <p className="text-sm text-center text-slate-300 mt-2">
-                    <span onClick={() => navigate("/signin")} className="text-blue-400 cursor-pointer hover:underline">
-                        Back to Sign In
-                    </span>
-                </p>
-            </form>
+                    </form>
+                </CardContent>
+            </Card>
         </div>
     );
 }

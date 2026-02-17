@@ -7,6 +7,7 @@ import { DashboardLayout } from './components/DashboardLayout';
 import { RequireAuth } from './components/RequireAuth';
 import Averages from './pages/dashboard/Averages';
 import Learn from './pages/dashboard/Learn';
+import Timer from './pages/dashboard/Timer';
 import { LandingPage } from './pages/LandingPage';
 import { Improve } from './pages/dashboard/Improve';
 import { PublicProfile } from './pages/PublicProfile';
@@ -24,6 +25,7 @@ function App() {
 
         <Route path="/dashboard" element={<RequireAuth><DashboardLayout /></RequireAuth>}>
           <Route index element={<Solves />} />
+          <Route path="timer" element={<Timer />} />
           <Route path="solves" element={<Solves />} />
           <Route path="averages" element={<Averages/>} />
           <Route path="learn" element={<Learn/>} />

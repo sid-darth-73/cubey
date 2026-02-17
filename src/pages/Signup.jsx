@@ -1,13 +1,17 @@
 import { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthButton } from "../components/ui/AuthButton";
+import { Button } from "../components/ui/Button";
+import { Input } from "../components/ui/Input";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
 import api from "../utils/api";
+
 export function Signup() {
     const emailRef = useRef(null);
     const passwordRef = useRef(null);
     const navigate = useNavigate();
     const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+
     async function handleSignUp() {
         const email = emailRef.current?.value?.trim();
         const password = passwordRef.current?.value;
@@ -16,7 +20,7 @@ export function Signup() {
             setError("All fields are required."); return;
         }
         try {
-            setLoading(true)
+            setLoading(true);
             const res = await api.post("/auth/signup", { email, password });
 
             const data = res.data;
@@ -39,48 +43,51 @@ export function Signup() {
     }, []);
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-900 via-slate-800 to-gray-900 text-white px-4">
-            <form
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    handleSignUp();
-                }}
-                className="bg-slate-800 p-6 md:p-8 w-full max-w-md rounded-2xl shadow-xl border border-slate-600 backdrop-blur-sm flex flex-col gap-5">
-                <h2 className="text-3xl font-bold font-quick text-center text-blue-400 animate-pulse mb-2">
-                    Create your Cubey Account
-                </h2>
+        <div className="flex items-center justify-center min-h-screen bg-[#0f172a] text-white px-4 relative overflow-hidden">
+            {/* Background Decor */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-3xl opacity-40"></div>
+                <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-3xl opacity-40"></div>
+            </div>
 
-                <p className="text-center text-slate-300 text-sm mb-4 font-mont">
-                    Sign up to track your PBs, drill algs, and level up your speedcubing skills!
-                </p>
+            <Card className="w-full max-w-md relative z-10 border-white/10 bg-surface/50">
+                <CardHeader>
+                    <CardTitle className="text-center text-3xl mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                        Join Cubey
+                    </CardTitle>
+                    <p className="text-center text-slate-400 text-sm">
+                        Track your PBs, drill algs, and level up!
+                    </p>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-5">
+                    <Input 
+                        ref={emailRef} 
+                        label="WCA ID or Email" 
+                        placeholder="Enter your WCA ID or Email" 
+                        autoFocus
+                    />
+                    
+                    <Input 
+                        ref={passwordRef} 
+                        type="password" 
+                        label="Password" 
+                        placeholder="Create a password" 
+                    />
 
-                <div className="flex flex-col gap-1">
-                    <label htmlFor="email" className="text-sm font-medium font-mont text-slate-200">WCA ID or Email</label>
-                    <div className="flex items-center border border-slate-600 rounded-lg h-12 pl-3 focus-within:border-blue-500 transition-all">
-                        <input ref={emailRef} type="text" placeholder="Enter your WCA ID or Email" className="bg-transparent font-mont border-none outline-none text-white px-2 flex-1 h-full"/>
-                    </div>
-                </div>
+                    {error && <div className="text-red-400 text-sm bg-red-500/10 p-2 rounded border border-red-500/20 text-center">{error}</div>}
 
-                <div className="flex flex-col gap-1">
-                    <label htmlFor="password" className="text-sm font-mont font-medium text-slate-200">Password</label>
-                    <div className="flex items-center border border-slate-600 rounded-lg h-12 pl-3 focus-within:border-blue-500 transition-all">
-                        <input ref={passwordRef} type="password" placeholder="Enter your password" className="bg-transparent font-mont border-none outline-none text-white px-2 flex-1 h-full"/>
-                    </div>
-                </div>
+                    <Button onClick={handleSignUp} loading={loading} className="w-full mt-2">
+                        Sign Up
+                    </Button>
 
-                {error && <div className="text-red-400 text-sm mt-1">{error}</div>}
-
-                <AuthButton onClick={handleSignUp} text="Sign up" loading={loading}/>
-
-                <p className="text-sm text-center text-slate-300">
-                    Already have an account?{" "}
-                    <span onClick={() => navigate("/signin")} className="text-blue-400 cursor-pointer hover:underline">
-                        Sign in
-                    </span>
-                </p>
-
-                
-            </form>
+                    <p className="text-sm text-center text-slate-400 mt-2">
+                        Already have an account?{" "}
+                        <span onClick={() => navigate("/signin")} className="text-blue-400 cursor-pointer hover:text-blue-300 font-medium transition-colors">
+                            Sign in
+                        </span>
+                    </p>
+                </CardContent>
+            </Card>
         </div>
     );
 }

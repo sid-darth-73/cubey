@@ -1,20 +1,20 @@
-const baseClasses =
-  "inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2";
+import React from 'react';
 
-const variantClasses = {
-  default:
-    "border-transparent bg-green-600 text-primary-foreground shadow hover:bg-primary/80",
-  secondary:
-    "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-  destructive:
-    "border-transparent bg-red-500 text-destructive-foreground shadow hover:bg-destructive/80",
-  outline: "text-foreground",
-};
-
-export function Badge({ className = "", variant = "default", ...props }) {
-  const variantClass = variantClasses[variant] || variantClasses.default;
+export const Badge = ({ children, variant = 'default', className = '', ...props }) => {
+  const variants = {
+    default: "bg-primary/20 text-blue-300 border-primary/30",
+    success: "bg-green-500/20 text-green-300 border-green-500/30",
+    warning: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
+    error: "bg-red-500/20 text-red-300 border-red-500/30",
+    outline: "border-border text-text-muted",
+  };
 
   return (
-    <div className={`${baseClasses} ${variantClass} ${className}`} {...props} />
+    <div 
+      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${variants[variant]} ${className}`}
+      {...props}
+    >
+      {children}
+    </div>
   );
-}
+};

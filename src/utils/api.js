@@ -1,7 +1,9 @@
 import axios from 'axios';
 
+const backend_url = import.meta.env.VITE_BACKEND_URL;
+
 const instance = axios.create({
-  baseURL:  "https://api-cubey.onrender.com" //,"http://localhost:3002", //
+  baseURL:  backend_url || "http://localhost:3002"
 });
 
 instance.interceptors.request.use((config) => {

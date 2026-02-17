@@ -1,13 +1,17 @@
 import { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthButton } from "../components/ui/AuthButton";
+import { Button } from "../components/ui/Button";
+import { Input } from "../components/ui/Input";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
 import api from "../utils/api";
+
 export function Signin() {
     const emailRef = useRef(null);
     const passwordRef = useRef(null);
     const navigate = useNavigate();
     const [error, setError] = useState("");
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
+
     async function handleSignIn() {
         const email = emailRef.current?.value?.trim();
         const password = passwordRef.current?.value;
@@ -17,7 +21,7 @@ export function Signin() {
         }
 
         try {
-            setLoading(true)
+            setLoading(true);
             const res = await api.post("/auth/signin", { email, password });
 
             const data = res.data;
@@ -40,46 +44,56 @@ export function Signin() {
     }, []);
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-900 via-slate-800 to-gray-900 text-white px-4">
-            <form
-                onSubmit={(e) => {
-                    e.preventDefault();
-                    handleSignIn();
-                }}
-                className="bg-slate-800 p-6 md:p-8 w-full max-w-md rounded-2xl shadow-xl border border-slate-600 backdrop-blur-sm flex flex-col gap-5" >
-                <h2 className="text-3xl font-bold text-center font-quick text-blue-400 animate-pulse mb-2">
-                    Welcome Back to Cubey
-                </h2>
+        <div className="flex items-center justify-center min-h-screen bg-[#0f172a] text-white px-4 relative overflow-hidden">
+             {/* Background Decor */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+                <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-3xl opacity-40"></div>
+                <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-3xl opacity-40"></div>
+            </div>
 
-                <div className="flex flex-col gap-1">
-                    <label htmlFor="email" className="text-sm font-mont font-medium text-slate-200">WCA ID or Email</label>
-                    <div className="flex items-center border border-slate-600 rounded-lg h-12 pl-3 focus-within:border-blue-500 transition-all">
-                        <input ref={emailRef} type="text" placeholder="Enter your WCA ID or Email" className="bg-transparent font-mont border-none outline-none text-white px-2 flex-1 h-full"/>
+            <Card className="w-full max-w-md relative z-10 border-white/10 bg-surface/50">
+                <CardHeader>
+                    <CardTitle className="text-center text-3xl mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
+                        Welcome Back
+                    </CardTitle>
+                    <p className="text-center text-slate-400 text-sm">Sign in to continue your cubing journey</p>
+                </CardHeader>
+                <CardContent className="flex flex-col gap-5">
+                    <Input 
+                        ref={emailRef} 
+                        label="WCA ID or Email" 
+                        placeholder="Enter your WCA ID or Email" 
+                        autoFocus
+                    />
+                    
+                    <div className="flex flex-col gap-1">
+                        <Input 
+                            ref={passwordRef} 
+                            type="password" 
+                            label="Password" 
+                            placeholder="Enter your password" 
+                        />
+                        <div className="text-right mt-1">
+                            <span onClick={() => navigate("/reset-password")} className="text-xs text-blue-400 cursor-pointer hover:text-blue-300 transition-colors">
+                                Forgot Password?
+                            </span>
+                        </div>
                     </div>
-                </div>
 
-                <div className="flex flex-col gap-1">
-                    <label htmlFor="password" className="text-sm font-mont font-medium text-slate-200">Password</label>
-                    <div className="flex items-center border border-slate-600 rounded-lg h-12 pl-3 focus-within:border-blue-500 transition-all">
-                        <input ref={passwordRef} type="password" placeholder="Enter your password" className="bg-transparent font-mont border-none outline-none text-white px-2 flex-1 h-full"/>
-                    </div>
-                    <div className="text-right">
-                        <span onClick={() => navigate("/reset-password")} className="text-xs text-blue-400 cursor-pointer hover:underline">
-                            Forgot Password?
+                    {error && <div className="text-red-400 text-sm bg-red-500/10 p-2 rounded border border-red-500/20 text-center">{error}</div>}
+                    
+                    <Button onClick={handleSignIn} loading={loading} className="w-full mt-2">
+                        Sign In
+                    </Button>
+                    
+                    <p className="text-sm text-center text-slate-400 mt-2">
+                        Don't have an account?{" "}
+                        <span onClick={() => navigate("/signup")} className="text-blue-400 cursor-pointer hover:text-blue-300 font-medium transition-colors">
+                            Sign up
                         </span>
-                    </div>
-                </div>
-
-                {error && <div className="text-red-400 text-sm mt-1">{error}</div>}
-                <AuthButton onClick={handleSignIn} text="Sign in" loading={loading}/>
-                
-                <p className="text-sm text-center text-slate-300">
-                    Don't have an account?{" "}
-                    <span onClick={() => navigate("/signup")} className="text-blue-400 cursor-pointer hover:underline">
-                        Sign up
-                    </span>
-                </p>
-            </form>
+                    </p>
+                </CardContent>
+            </Card>
         </div>
     );
 }

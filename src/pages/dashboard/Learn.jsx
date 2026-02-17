@@ -3,7 +3,8 @@ import axios from "../../utils/api";
 import { algId } from "../../utils/algId";
 import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
-import { TrashIcon } from "../../components/ui/TrashIcon";
+import { Card, CardContent } from "../../components/ui/Card";
+import { Trash2, Shuffle, Play, Square, Timer } from 'lucide-react';
 
 export default function Learn() {
   const [category, setCategory] = useState("3x3");
@@ -164,7 +165,7 @@ export default function Learn() {
   const getTimerColor = () => {
     switch (timerState) {
       case 'ready':
-        return 'text-green-400';
+        return 'text-green-400 drop-shadow-[0_0_15px_rgba(74,222,128,0.5)]';
       case 'running':
         return 'text-white';
       default:
@@ -177,168 +178,191 @@ export default function Learn() {
       case 'ready':
         return 'Release to start';
       case 'running':
-        return <><span className="bg-slate-700 px-2 py-1 rounded">Stop</span></>;
+        return <span className="flex items-center gap-2"><Square size={16} fill="white" /> Stop</span>;
       default:
-        return <>Hold to <span className="bg-slate-700 px-2 py-1 rounded">Start</span></>;
+        return <span className="flex items-center gap-2">Hold <span className="bg-surface px-2 py-0.5 rounded border border-border">Space</span> to Start</span>;
     }
   };
 
   return (
-    <div className="bg-slate-900 text-white min-h-screen flex flex-col p-2 sm:p-4">
-      <div className="bg-slate-800 p-3 sm:p-4 rounded-lg mb-4">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-4 mb-4 font-quick text-sm">
-          <div>
-            <label className="block mb-1 text-slate-300">Category</label>
-            <select
-              value={category}
-              onChange={(e) => {
-                const newCategory = e.target.value;
-                setCategory(newCategory);
-                if(newCategory === "3x3") {
-                  const defaultSub = Object.keys(algId["3x3"])[0];
-                  const defaultKey = Object.keys(algId["3x3"][defaultSub])[0];
-                  setSubcategory(defaultSub);
-                  setAlgoKey(defaultKey);
-                }else {
-                  const defaultKey = Object.keys(algId[newCategory])[0];
-                  setSubcategory("");
-                  setAlgoKey(defaultKey);
+    <div className="flex flex-col h-[calc(100vh-6rem)] gap-4 animate-in fade-in duration-500">
+      
+      {/* Control Panel */}
+      <Card className="flex-shrink-0">
+        <CardContent className="p-4 md:p-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 font-quick text-sm mb-6">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-text-muted uppercase tracking-wider">Category</label>
+              <div className="relative">
+                <select
+                  value={category}
+                  onChange={(e) => {
+                    const newCategory = e.target.value;
+                    setCategory(newCategory);
+                    if(newCategory === "3x3") {
+                      const defaultSub = Object.keys(algId["3x3"])[0];
+                      const defaultKey = Object.keys(algId["3x3"][defaultSub])[0];
+                      setSubcategory(defaultSub);
+                      setAlgoKey(defaultKey);
+                    }else {
+                      const defaultKey = Object.keys(algId[newCategory])[0];
+                      setSubcategory("");
+                      setAlgoKey(defaultKey);
+                    }
+                  }}
+                  className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-text-main focus:ring-2 focus:ring-primary focus:outline-none appearance-none"
+                >
+                  {Object.keys(algId).map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {category === "3x3" && (
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-text-muted uppercase tracking-wider">Subcategory</label>
+                <div className="relative">
+                  <select
+                    value={subcategory}
+                    onChange={(e) => {
+                      const newSub = e.target.value;
+                      setSubcategory(newSub);
+                      const defaultKey = Object.keys(algId["3x3"][newSub])[0];
+                      setAlgoKey(defaultKey);
+                    }}
+                   className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-text-main focus:ring-2 focus:ring-primary focus:outline-none appearance-none"
+                  >
+                    {Object.keys(algId["3x3"]).map((sub) => (
+                      <option key={sub} value={sub}>
+                        {sub.toUpperCase()}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+
+            <div className={`space-y-1.5 ${category !== "3x3" ? 'md:col-span-2' : ''}`}>
+              <label className="text-xs font-semibold text-text-muted uppercase tracking-wider">Algorithm</label>
+              <div className="relative">
+                <select
+                  value={algoKey}
+                  onChange={(e) => setAlgoKey(e.target.value)}
+                  className="w-full bg-surface border border-border rounded-lg px-3 py-2 text-text-main focus:ring-2 focus:ring-primary focus:outline-none appearance-none"
+                >
+                  {Object.keys(
+                    category === "3x3" ? algId[category]?.[subcategory] || {} : algId[category] || {}
+                  ).map((key) => {
+                    const [name] =
+                      category === "3x3" ? algId[category]?.[subcategory]?.[key] || [] : algId[category]?.[key] || [];
+                    return (
+                      <option key={key} value={key}>
+                        {name}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="flex items-center gap-8">
+              <div className="w-24 h-24 bg-white/5 rounded-lg border border-white/10 p-2 flex items-center justify-center">
+                {selectedAlgo?.[1]?.startsWith("oll") && selectedAlgo[1].length <= 5 && (
+                  <img
+                    src={`/oll/svg/${selectedAlgo[1][3]}${selectedAlgo[1].length === 5 ? selectedAlgo[1][4] : ""}.svg`}
+                    alt="OLL visual"
+                    className="max-w-full max-h-full"
+                  />
+                )}
+                {selectedAlgo?.[1]?.startsWith("pll_") && (
+                  <img
+                    src={`/pll-arrows/svg/${selectedAlgo[1]}.svg`}
+                    alt="PLL visual"
+                    className="max-w-full max-h-full"
+                  />
+                )}
+                {(selectedAlgo?.[1]?.startsWith("pllpar") || selectedAlgo?.[1]?.startsWith("ollpar")) && (
+                  <img
+                    src={`/parity/${selectedAlgo[1]}.png`}
+                    alt="4x4 parity"
+                    className="max-w-full max-h-full"
+                  />
+                )}
+                {selectedAlgo?.[1]?.startsWith("l2e") && (
+                  <img
+                    src={`/l2e/${selectedAlgo[1]}.png`}
+                    alt="5x5 L2E case"
+                    className="max-w-full max-h-full"
+                  />
+                )}
+              </div>
+
+              <div className="font-quick">
+                <h3 className="text-2xl font-bold text-text-main mb-2 tracking-wide font-mono">{selectedAlgo?.[2]}</h3>
+                <div className="flex items-center gap-3 text-sm">
+                  <span className="text-text-muted">Personal Best:</span>
+                  {bestTime !== null ? (
+                    <div className="flex items-center gap-2">
+                      <Badge variant="success" className="text-base px-2 py-0.5">{bestTime.toFixed(2)}s</Badge>
+                      <button 
+                        className="text-text-muted hover:text-red-400 transition-colors p-1"
+                        title="Reset Best Time"
+                        onClick={async () => {
+                          if(confirm("Are you sure you want to reset your best time?")) {
+                            try{
+                              await axios.delete(`/learn/reset/${selectedAlgo[1]}`);
+                              setBestTime(null);
+                            } catch (err) {
+                              console.error("Failed to reset best time:", err);
+                            }
+                          }
+                        }}
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="text-text-muted italic">Not recorded</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <Button
+              onClick={() => {
+                setRandomMode(!randomMode);
+                if(!randomMode) {
+                  setRandomAlgorithm();
                 }
               }}
-              className="bg-slate-700 p-2 rounded-lg text-white w-full"
+              variant={randomMode ? "primary" : "secondary"}
+              className="w-full md:w-auto"
             >
-              {Object.keys(algId).map((c) => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
-              ))}
-            </select>
+              <Shuffle size={18} className="mr-2" />
+              {randomMode ? "Stop Randomizer" : "Start Randomizer"}
+            </Button>
           </div>
+        </CardContent>
+      </Card>
 
-          {category === "3x3" && (
-            <div>
-              <label className="block mb-1 text-slate-300">Subcategory</label>
-              <select
-                value={subcategory}
-                onChange={(e) => {
-                  const newSub = e.target.value;
-                  setSubcategory(newSub);
-                  const defaultKey = Object.keys(algId["3x3"][newSub])[0];
-                  setAlgoKey(defaultKey);
-                }}
-                className="bg-slate-700 p-2 rounded-lg text-white w-full"
-              >
-                {Object.keys(algId["3x3"]).map((sub) => (
-                  <option key={sub} value={sub}>
-                    {sub.toUpperCase()}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          <div className="sm:col-start-3">
-            <label className="block mb-1 text-slate-300">Algorithm</label>
-            <select
-              value={algoKey}
-              onChange={(e) => setAlgoKey(e.target.value)}
-              className="bg-slate-700 p-2 rounded-lg text-white w-full"
-            >
-              {Object.keys(
-                category === "3x3" ? algId[category]?.[subcategory] || {} : algId[category] || {}
-              ).map((key) => {
-                const [name] =
-                  category === "3x3" ? algId[category]?.[subcategory]?.[key] || [] : algId[category]?.[key] || [];
-                return (
-                  <option key={key} value={key}>
-                    {name}
-                  </option>
-                );
-              })}
-            </select>
-          </div>
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-center text-center sm:text-left gap-4 sm:gap-6 mb-4">
-          <div className="w-24 h-24 flex-shrink-0">
-            {selectedAlgo?.[1]?.startsWith("oll") && selectedAlgo[1].length <= 5 && (
-              <img
-                src={`/oll/svg/${selectedAlgo[1][3]}${selectedAlgo[1].length === 5 ? selectedAlgo[1][4] : ""}.svg`}
-                alt="OLL visual"
-                className="w-full h-full"
-              />
-            )}
-            {selectedAlgo?.[1]?.startsWith("pll_") && (
-              <img
-                src={`/pll-arrows/svg/${selectedAlgo[1]}.svg`}
-                alt="PLL visual"
-                className="w-full h-full"
-              />
-            )}
-            {(selectedAlgo?.[1]?.startsWith("pllpar") || selectedAlgo?.[1]?.startsWith("ollpar")) && (
-              <img
-                src={`/parity/${selectedAlgo[1]}.png`}
-                alt="4x4 parity"
-                className="w-full h-full"
-              />
-            )}
-            {selectedAlgo?.[1]?.startsWith("l2e") && (
-              <img
-                src={`/l2e/${selectedAlgo[1]}.png`}
-                alt="5x5 L2E case"
-                className="w-full h-full"
-              />
-            )}
-          </div>
-
-          <div className="flex flex-col justify-center font-quick">
-            <div className="text-xl sm:text-2xl text-gray-400">{selectedAlgo?.[2]}</div>
-            <div className="text-base sm:text-lg mt-2">
-              Your Best Time:{" "}
-              {bestTime !== null ? (
-                <div className="flex items-center justify-center sm:justify-start gap-2 mt-1">
-                  <Badge variant="default">{bestTime.toFixed(2)}s</Badge>
-                  <div className="cursor-pointer" onClick={async () => {
-                      if(confirm("Are you sure you want to reset your best time?")) {
-                        try{
-                          await axios.delete(`/learn/reset/${selectedAlgo[1]}`);
-                          setBestTime(null);
-                        } catch (err) {
-                          console.error("Failed to reset best time:", err);
-                        }
-                      }
-                    }}><TrashIcon/></div>
-                </div>
-              ) : (
-                <span className="text-gray-400">Not yet recorded</span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <Button
-          onClick={() => {
-            setRandomMode(!randomMode);
-            if(!randomMode) {
-              setRandomAlgorithm();
-            }
-          }}
-          variant={randomMode ? "primary" : "secondary"}
-          text={randomMode ? "Stop Randomizer" : "Start Randomizer"}
-          className="font-quick w-full sm:w-auto"
-        />
-      </div>
-
-      {/* --- timer --- */}
+      {/* Timer Area */}
       <div 
-        className="bg-gradient-to-br from-slate-700 to-slate-900 flex-grow rounded-lg flex flex-col justify-center items-center text-center select-none cursor-pointer p-4"
+        className="flex-grow bg-surface/30 border border-white/5 rounded-2xl flex flex-col justify-center items-center relative overflow-hidden cursor-pointer select-none group hover:bg-surface/40 transition-colors"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        <div className={`text-7xl sm:text-8xl font-bold font-mono transition-colors duration-200 ${getTimerColor()}`}>
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 pointer-events-none" />
+        
+        <div className={`relative z-10 text-8xl md:text-9xl font-bold font-mono transition-all duration-100 ${getTimerColor()}`}>
           {time.toFixed(2)}
         </div>
-        <div className="mt-4 text-gray-400 text-lg font-quick h-8">
+        
+        <div className="relative z-10 mt-8 text-text-muted text-lg font-quick flex items-center gap-2 opacity-60 group-hover:opacity-100 transition-opacity">
           {getHelperText()}
         </div>
       </div>

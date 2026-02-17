@@ -3,6 +3,75 @@
 @import "tailwindcss";
 
 @theme {
-  --font-mont: Montserrat; 
-  --font-quick: Quicksand
+  --font-mont: Montserrat, sans-serif;
+  --font-quick: Quicksand, sans-serif;
+
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-hover: var(--surface-hover);
+  
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  
+  --color-secondary: var(--secondary);
+  
+  --color-text-main: var(--text-main);
+  --color-text-muted: var(--text-muted);
+
+  --color-border: var(--border);
+}
+
+:root {
+  /* Dark Mode (Default) */
+  --background: #0f172a; /* slate-900 */
+  --surface: #1e293b; /* slate-800 */
+  --surface-hover: #334155; /* slate-700 */
+  
+  --primary: #3b82f6; /* blue-500 */
+  --primary-hover: #2563eb; /* blue-600 */
+  
+  --secondary: #64748b; /* slate-500 */
+  
+  --text-main: #f8fafc; /* slate-50 */
+  --text-muted: #94a3b8; /* slate-400 */
+
+  --border: #334155; /* slate-700 */
+}
+
+/* Light Mode */
+.light {
+  --background: #f8fafc; /* slate-50 */
+  --surface: #ffffff; /* white */
+  --surface-hover: #e2e8f0; /* slate-200 */
+  
+  --primary: #2563eb; /* blue-600 */
+  --primary-hover: #1d4ed8; /* blue-700 */
+  
+  --secondary: #94a3b8; /* slate-400 */
+  
+  --text-main: #0f172a; /* slate-900 */
+  --text-muted: #64748b; /* slate-500 */
+
+  --border: #e2e8f0; /* slate-200 */
+}
+
+
+@layer base {
+  body {
+    @apply bg-background text-text-main font-quick antialiased transition-colors duration-300;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-mont font-bold;
+  }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-surface/80 backdrop-blur-md border border-border/50 shadow-xl;
+  }
+  
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500;
+  }
 }

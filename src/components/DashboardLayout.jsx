@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
-import { NavButton } from './ui/NavButton';
-import { Menu, X, Copy, ExternalLink } from 'lucide-react';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Button } from './ui/Button';
+import { Menu, X, Copy, ExternalLink, LogOut, LayoutDashboard, Calculator, BookOpen, TrendingUp, Timer } from 'lucide-react';
+import { ThemeToggle } from './ThemeToggle';
 
 export function DashboardLayout() {
   const user = localStorage.getItem('user');
@@ -9,6 +10,7 @@ export function DashboardLayout() {
   const publicUrl = `https://cubey-nine.vercel.app/${shareLink}`;
 
   const navigate = useNavigate();
+  const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -18,52 +20,141 @@ export function DashboardLayout() {
     setTimeout(() => setCopied(false), 1500);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    localStorage.removeItem('shareLink');
+    navigate('/signin');
+  };
+
+  const navItems = [
+    { path: '/dashboard/solves', label: 'Solves', icon: LayoutDashboard },
+    { path: '/dashboard/timer', label: 'Timer', icon: Timer },
+    { path: '/dashboard/averages', label: 'Averages', icon: Calculator },
+    { path: '/dashboard/learn', label: 'Learn', icon: BookOpen },
+    { path: '/dashboard/improve', label: 'Improve', icon: TrendingUp },
+  ];
+
   return (
-    <div className="flex min-h-screen bg-slate-900 text-white font-quick">
+    <div className="flex min-h-screen bg-background text-text-main font-quick">
 
-      {/* sidebar */}
-      <div className={`fixed z-30 top-0 left-0 h-full bg-slate-800 p-4 space-y-6 w-64 transition-transform transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0 md:flex md:flex-col md:h-screen`}>
+      {/* Mobile Overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 z-20 bg-background/80 backdrop-blur-sm"
+          onClick={() => setSidebarOpen(false)}
+        />
+      )}
 
-        <div className="flex flex-col gap-2 mb-4">
-          <div className="flex items-center justify-between md:justify-center">
-            <div className="font-bold text-lg font-mont truncate max-w-[160px]">{user}</div>
-            <button className="md:hidden" onClick={() => setSidebarOpen(false)}>
-              <X className="w-6 h-6 text-slate-300 hover:text-white" />
+      {/* Sidebar */}
+      {/* Sidebar */}
+      <aside className={`
+        fixed z-30 top-0 left-0 h-full w-72 
+        bg-surface/95 backdrop-blur-xl border-r border-border
+        transition-transform duration-300 ease-in-out
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} 
+        flex flex-col shadow-2xl
+      `}>
+        {/* Sidebar Header */}
+        <div className="p-6 border-b border-border/50">
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold font-mont text-primary tracking-wide">Cubey</h1>
+            <button className="text-text-muted hover:text-white" onClick={() => setSidebarOpen(false)}>
+              <X size={24} />
             </button>
           </div>
 
-          {/* public link */}
-          <div className="text-sm text-slate-300 bg-slate-700 bg-opacity-30 p-2 rounded-md flex items-center justify-between hover:bg-slate-600 transition">
-            <span className="truncate max-w-[140px]">{publicUrl}</span>
-            <button onClick={handleCopy} className="ml-2 text-slate-400 hover:text-blue-400 transition">
-              <Copy className="w-4 h-4" />
-            </button>
+          <div className="flex items-center gap-3 px-3 py-2 bg-background/50 rounded-lg border border-border/50">
+            <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-primary to-purple-500 flex items-center justify-center text-xs font-bold">
+              {user?.substring(0, 2).toUpperCase()}
+            </div>
+            <div className="overflow-hidden">
+              <p className="text-sm font-medium truncate">{user}</p>
+              <p className="text-xs text-text-muted truncate">Speedcuber</p>
+            </div>
           </div>
-          {copied && <span className="text-green-400 text-xs animate-pulse ml-1">Copied!</span>}
-
-          {/* public page link */}
-          <button onClick={() => window.open(publicUrl, '_blank')} className="flex items-center gap-2 text-sm text-blue-400 hover:text-blue-300 transition hover:underline">
-            <ExternalLink className="w-4 h-4 text-center" />
-            View Public Page
-          </button>
         </div>
 
-        {/* nav buttons */}
-        <NavButton text="Solves" onClick={() => { navigate('/dashboard/solves'); setSidebarOpen(false); }} />
-        <NavButton text="Averages" onClick={() => { navigate('/dashboard/averages'); setSidebarOpen(false); }} />
-        <NavButton text="Learn" onClick={() => { navigate('/dashboard/learn'); setSidebarOpen(false); }} />
-        <NavButton text="Improve" onClick={() => { navigate('/dashboard/improve'); setSidebarOpen(false); }} />
-      </div>
+        {/* Navigation */}
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.path;
+            
+            return (
+              <button
+                key={item.path}
+                onClick={() => {
+                  navigate(item.path);
+                  setSidebarOpen(false);
+                }}
+                className={`
+                  w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all
+                  ${isActive 
+                    ? 'bg-primary/10 text-primary hover:bg-primary/20' 
+                    : 'text-text-muted hover:text-text-main hover:bg-surface-hover'
+                  }
+                `}
+              >
+                <Icon size={18} />
+                {item.label}
+              </button>
+            );
+          })}
+        </nav>
 
-      {/* main content */}
-      <div className="flex-1 p-4 md:p-6">
-        <div className="md:hidden mb-4">
-          <button onClick={() => setSidebarOpen(true)} className="text-white focus:outline-none">
-            <Menu className="w-6 h-6" />
-          </button>
+        {/* Sidebar Footer */}
+        <div className="p-4 border-t border-border/50 space-y-4">
+          <div className="p-3 bg-background/50 rounded-lg border border-border/50 space-y-2">
+            <div className="flex items-center justify-between text-xs text-text-muted">
+              <span>Public Profile</span>
+              {copied && <span className="text-green-400 animate-pulse">Copied!</span>}
+            </div>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 text-xs bg-black/20 p-1.5 rounded truncate text-text-muted">
+                {shareLink}
+              </code>
+              <button onClick={handleCopy} className="text-text-muted hover:text-primary transition">
+                <Copy size={14} />
+              </button>
+              <button onClick={() => window.open(publicUrl, '_blank')} className="text-text-muted hover:text-primary transition">
+                <ExternalLink size={14} />
+              </button>
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+             <ThemeToggle className="w-full justify-center bg-surface hover:bg-surface-hover border border-border" />
+          </div>
+
+          <Button 
+            variant="ghost" 
+            className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-500/10"
+            onClick={handleLogout}
+          >
+            <LogOut size={18} className="mr-2" />
+            Sign Out
+          </Button>
         </div>
-        <Outlet />
-      </div>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+        {/* Mobile Header */}
+        <div className="flex items-center justify-between p-4 border-b border-border bg-surface/50 backdrop-blur-md">
+          <button onClick={() => setSidebarOpen(true)} className="text-text-main p-2 hover:bg-surface-hover rounded-lg transition-colors">
+            <Menu size={24} />
+          </button>
+          <h1 className="text-xl font-bold font-mont text-primary">Cubey</h1>
+        </div>
+
+        {/* Content Area */}
+        <div className="flex-1 overflow-auto p-4 md:p-8 bg-gradient-to-br from-background via-background to-surface/20">
+          <div className="max-w-6xl mx-auto space-y-6">
+            <Outlet />
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
