@@ -167,9 +167,9 @@ export default function Learn() {
       case 'ready':
         return 'text-green-400 drop-shadow-[0_0_15px_rgba(74,222,128,0.5)]';
       case 'running':
-        return 'text-white';
+        return 'text-text-main';
       default:
-        return 'text-white';
+        return 'text-text-main';
     }
   };
   
@@ -178,7 +178,7 @@ export default function Learn() {
       case 'ready':
         return 'Release to start';
       case 'running':
-        return <span className="flex items-center gap-2"><Square size={16} fill="white" /> Stop</span>;
+        return <span className="flex items-center gap-2"><Square size={16} className="fill-text-main" /> Stop</span>;
       default:
         return <span className="flex items-center gap-2">Hold <span className="bg-surface px-2 py-0.5 rounded border border-border">Space</span> to Start</span>;
     }
@@ -271,7 +271,7 @@ export default function Learn() {
 
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div className="flex items-center gap-8">
-              <div className="w-24 h-24 bg-white/5 rounded-lg border border-white/10 p-2 flex items-center justify-center">
+              <div className="w-24 h-24 bg-surface rounded-lg border border-border p-2 flex items-center justify-center">
                 {selectedAlgo?.[1]?.startsWith("oll") && selectedAlgo[1].length <= 5 && (
                   <img
                     src={`/oll/svg/${selectedAlgo[1][3]}${selectedAlgo[1].length === 5 ? selectedAlgo[1][4] : ""}.svg`}
@@ -352,7 +352,7 @@ export default function Learn() {
 
       {/* Timer Area */}
       <div 
-        className="flex-grow bg-surface/30 border border-white/5 rounded-2xl flex flex-col justify-center items-center relative overflow-hidden cursor-pointer select-none group hover:bg-surface/40 transition-colors"
+        className="flex-grow bg-surface border border-border rounded-2xl flex flex-col justify-center items-center relative overflow-hidden cursor-pointer select-none group hover:bg-surface-hover transition-colors"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
