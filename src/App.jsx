@@ -24,7 +24,7 @@ function App() {
 
 
         <Route path="/dashboard" element={<RequireAuth><DashboardLayout /></RequireAuth>}>
-          <Route index element={<Solves />} />
+          <Route index element={<Timer />} />
           <Route path="timer" element={<Timer />} />
           <Route path="solves" element={<Solves />} />
           <Route path="averages" element={<Averages/>} />

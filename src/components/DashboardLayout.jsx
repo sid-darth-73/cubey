@@ -148,11 +148,15 @@ export function DashboardLayout() {
           <h1 className="text-xl font-bold font-mont text-primary">Cubey</h1>
         </div>
 
-        {/* Content Area */}
-        <div className="flex-1 overflow-auto p-4 md:p-8 bg-gradient-to-br from-background via-background to-surface/20">
-          <div className="max-w-6xl mx-auto space-y-6">
+        {/* Content Area - full bleed for Timer, contained for other pages */}
+        <div className={`flex-1 flex flex-col min-h-0 ${location.pathname === '/dashboard/timer' ? 'overflow-hidden' : 'overflow-auto p-4 md:p-8 bg-gradient-to-br from-background via-background to-surface/20'}`}>
+          {location.pathname === '/dashboard/timer' ? (
             <Outlet />
-          </div>
+          ) : (
+            <div className="max-w-6xl mx-auto space-y-6 w-full">
+              <Outlet />
+            </div>
+          )}
         </div>
       </main>
     </div>

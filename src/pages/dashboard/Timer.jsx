@@ -307,7 +307,7 @@ export default function Timer() {
     const dimUI = timerState === 'ready' || timerState === 'running' ? 'opacity-30 pointer-events-none' : '';
 
     return (
-        <div className="bg-background h-screen md:h-full flex flex-col text-text-main font-sans relative overflow-hidden">
+        <div className="bg-gradient-to-br from-background via-background to-surface/30 flex-1 flex flex-col min-h-full text-text-main font-sans relative overflow-hidden">
             
             {/* --- DETAILS MODAL --- */}
             {selectedSolveId && selectedSolve && (
@@ -346,48 +346,51 @@ export default function Timer() {
                 </div>
             )}
 
-            {/* --- HEADER --- */}
-            <div className={`shrink-0 border-b border-border py-1 flex items-center justify-between bg-surface transition-opacity duration-200 ${dimUI}`}>
-                <div className="flex-1 px-2">
+            {/* --- HEADER: Timer feature toolbar --- */}
+            <div className={`shrink-0 border-b border-border py-3 px-4 flex items-center justify-between bg-surface/80 backdrop-blur-sm transition-opacity duration-200 ${dimUI}`}>
+                <div className="flex items-center gap-3">
+                    <span className="text-text-muted text-sm font-medium hidden sm:inline">Event</span>
                     <select 
-                        className="bg-surface border border-border px-3 py-1.5 rounded text-text-main outline-none text-sm font-bold" 
+                        className="bg-background/60 border border-border px-4 py-2 rounded-lg text-text-main outline-none text-sm font-bold focus:border-primary transition-colors" 
                         value={cubetype} 
                         onChange={(e) => setCubetype(e.target.value)}
                     >
                         {['3x3','2x2','4x4','5x5','6x6','7x7'].map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
-                </div>
-                <div className="flex-1 px-2 flex justify-end gap-2">
-                    <button 
-                        onClick={() => setIsTypingMode(!isTypingMode)}
-                        className={`px-3 py-1.5 rounded border text-sm font-bold transition-colors ${isTypingMode ? 'bg-green-600 border-green-400 text-white' : 'bg-surface border-border text-text-main hover:bg-surface-hover'}`}
-                    >
-                        {isTypingMode ? "⌨️ Input" : "⏱ Timer"}
-                    </button>
+                    <span className="text-text-muted text-sm font-medium hidden sm:inline">Session</span>
                     <select 
-                        className="bg-surface border border-border px-3 py-1.5 rounded text-text-main outline-none text-sm font-bold" 
+                        className="bg-background/60 border border-border px-4 py-2 rounded-lg text-text-main outline-none text-sm font-bold focus:border-primary transition-colors" 
                         value={session} 
                         onChange={(e) => setSession(e.target.value)}
                     >
                         {Array.from({ length: 10 }, (_, i) => <option key={i + 1} value={i + 1}>Session {i + 1}</option>)}
                     </select>
                 </div>
+                <div className="flex items-center gap-2">
+                    <button 
+                        onClick={() => setIsTypingMode(!isTypingMode)}
+                        className={`px-4 py-2 rounded-lg border text-sm font-bold transition-colors ${isTypingMode ? 'bg-green-600 border-green-400 text-white' : 'bg-background/60 border-border text-text-main hover:bg-surface-hover hover:border-primary/50'}`}
+                    >
+                        {isTypingMode ? "⌨️ Manual input" : "⏱ Timer"}
+                    </button>
+                </div>
             </div>
 
             {/* --- SCRAMBLE --- */}
-            <div className={`shrink-0 py-2 text-center px-4 leading-relaxed flex flex-col items-center justify-center transition-opacity duration-200 ${dimUI}`}>
+            <div className={`shrink-0 py-4 px-4 leading-relaxed flex flex-col items-center justify-center border-b border-border/50 bg-surface/30 transition-opacity duration-200 ${dimUI}`}>
+                <p className="text-text-muted text-xs uppercase tracking-widest mb-2 font-medium">Scramble</p>
                 <div className='flex flex-col items-center w-full'> 
-                    <div className='font-mono mx-2 text-xl md:text-3xl min-h-12 text-center w-full'>
+                    <div className='font-mono mx-2 text-lg sm:text-xl md:text-2xl lg:text-3xl min-h-14 text-center w-full text-text-main'>
                         {isLoaded ? scramble : "Loading..."} 
                     </div>
-                    <div className="flex gap-4 mt-2 opacity-50 hover:opacity-100 transition-opacity">
-                        <button className='text-xs uppercase tracking-widest hover:text-primary hover:underline' onClick={()=>{
+                    <div className="flex gap-6 mt-3 opacity-60 hover:opacity-100 transition-opacity">
+                        <button className='text-xs uppercase tracking-widest text-text-muted hover:text-primary hover:underline' onClick={()=>{
                             if (prevscramble.length > 0){
                                 setScramble(() => prevscramble)
                                 setPrevscramble(() => "")
                             }
                         }}>Prev</button>
-                        <button className='text-xs uppercase tracking-widest hover:text-primary hover:underline' onClick={()=>{
+                        <button className='text-xs uppercase tracking-widest text-text-muted hover:text-primary hover:underline' onClick={()=>{
                             setPrevscramble(() => scramble)
                             setScramble(generateScramble({ type: cubetype }))
                         }}>Next</button>
@@ -400,12 +403,13 @@ export default function Timer() {
                 
                 {/* LIST */}
                 <div className={`
-                    bg-surface/50 md:bg-surface md:basis-1/6 md:border-r border-border flex flex-col
+                    bg-surface/60 md:bg-surface/80 md:basis-1/6 md:border-r border-border flex flex-col
                     ${mobileView === 'solves' ? 'flex h-full absolute inset-0 z-20 md:static' : 'hidden md:flex'}
                     ${dimUI}
                 `}>
-                    <div className="p-3 text-center font-bold bg-surface sticky top-0 z-10 shadow-md border-b border-border">
-                        Solves ({solves.length})
+                    <div className="py-4 px-3 text-center border-b border-border">
+                        <h2 className="text-sm uppercase tracking-widest text-text-muted font-bold">Solves</h2>
+                        <p className="text-2xl font-mono font-bold text-text-main mt-0.5">{solves.length}</p>
                     </div>
                     <div className="flex-1 overflow-y-auto p-2 scrollbar-thin">
                          <div className="flex flex-col-reverse gap-1">
@@ -413,17 +417,17 @@ export default function Timer() {
                                 <div 
                                     key={s.id} 
                                     onClick={() => setSelectedSolveId(s.id)}
-                                    className={`flex justify-between px-4 py-3 md:py-1.5 rounded cursor-pointer transition-colors ${s.penalty === 'DNF' ? 'text-red-400 border-l-2 border-red-500 bg-red-500/10' : 'hover:bg-surface-hover text-text-main bg-background/40'}`}
+                                    className={`flex justify-between items-center px-3 py-2.5 md:py-2 rounded-lg cursor-pointer transition-colors ${s.penalty === 'DNF' ? 'text-red-400 border-l-2 border-red-500 bg-red-500/10' : 'hover:bg-surface-hover text-text-main bg-background/30'}`}
                                 >
-                                    <span className="text-text-muted w-8 text-sm">{i + 1}.</span>
-                                    <span className="font-mono font-bold text-lg md:text-sm">{formatTime(s.time, s.penalty)}</span>
+                                    <span className="text-text-muted w-7 text-sm font-medium">{i + 1}.</span>
+                                    <span className="font-mono font-bold text-base md:text-sm">{formatTime(s.time, s.penalty)}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
                 </div>
 
-                {/* TIMER / INPUT */}
+                {/* TIMER / INPUT — main feature area */}
                 <div
                     className={`
                         md:basis-4/6 flex flex-col justify-center items-center relative overflow-hidden select-none
@@ -434,44 +438,57 @@ export default function Timer() {
                     onPointerCancel={handlePointerUp}
                     style={{ touchAction: 'none' }}
                 >
-                    {isTypingMode ? (
-                        <div className="flex flex-col items-center w-full max-w-2xl px-8">
-                            <input
-                                ref={inputRef}
-                                type="number"
-                                pattern="[0-9]*"
-                                value={manualInput}
-                                onChange={(e) => setManualInput(e.target.value)}
-                                onKeyDown={handleManualSubmit}
-                                className="bg-transparent text-center text-7xl md:text-9xl font-mono text-text-main outline-none w-full"
-                            />
-                        </div>
-                    ) : (
-                        <>
-                            <div className={`
-                                font-mono font-bold tabular-nums transition-colors duration-100
-                                text-[22vw] md:text-[120px] 
-                                ${timerState === 'ready' ? 'text-green-500' : 'text-text-main'}
-                                ${timerState === 'running' ? '' : 'drop-shadow-lg'}
-                            `}>
-                                {formatTime(timeDisplay)}
-                            </div>
-                            <div className="text-text-muted font-mono text-lg flex gap-6 mt-4">
-                                <span>Ao5: {formatTime(stats.averages[5].current)}</span>
-                                <span>Ao12: {formatTime(stats.averages[12].current)}</span>
-                            </div>
-                        </>
-                    )}
+                    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center py-8 md:py-12 px-6 rounded-2xl bg-surface/40 border border-border/50 shadow-xl backdrop-blur-sm">
+                        {isTypingMode ? (
+                            <>
+                                <p className="text-text-muted text-sm uppercase tracking-widest mb-4">Manual time (centiseconds)</p>
+                                <input
+                                    ref={inputRef}
+                                    type="number"
+                                    pattern="[0-9]*"
+                                    value={manualInput}
+                                    onChange={(e) => setManualInput(e.target.value)}
+                                    onKeyDown={handleManualSubmit}
+                                    placeholder="0"
+                                    className="bg-background/50 border border-border rounded-xl text-center text-6xl md:text-8xl font-mono text-text-main outline-none w-full py-4 focus:border-primary transition-colors"
+                                />
+                                <p className="text-text-muted text-xs mt-3">Enter time and press Enter</p>
+                            </>
+                        ) : (
+                            <>
+                                <p className="text-text-muted text-xs uppercase tracking-widest mb-2 font-medium">
+                                    {timerState === 'idle' && 'Hold space or tap to start'}
+                                    {timerState === 'ready' && 'Release to start'}
+                                    {timerState === 'running' && 'Press space or tap to stop'}
+                                </p>
+                                <div className={`
+                                    font-mono font-bold tabular-nums transition-colors duration-100
+                                    text-[20vw] sm:text-[18vw] md:text-[140px] lg:text-[160px] leading-none
+                                    ${timerState === 'ready' ? 'text-green-500' : 'text-text-main'}
+                                    ${timerState === 'running' ? 'text-primary' : ''}
+                                    drop-shadow-lg
+                                `}>
+                                    {formatTime(timeDisplay)}
+                                </div>
+                                <div className="text-text-muted font-mono text-base md:text-lg flex gap-8 mt-6">
+                                    <span><span className="text-text-muted/80">Ao5</span> {formatTime(stats.averages[5].current)}</span>
+                                    <span><span className="text-text-muted/80">Ao12</span> {formatTime(stats.averages[12].current)}</span>
+                                </div>
+                            </>
+                        )}
+                    </div>
                 </div>
 
                 {/* STATS */}
                 <div className={`
-                    bg-surface/50 md:bg-surface md:basis-1/6 md:border-l border-border 
+                    bg-surface/60 md:bg-surface/80 md:basis-1/6 md:border-l border-border 
                     overflow-y-auto p-4 text-sm font-mono
                     ${mobileView === 'stats' ? 'block h-full absolute inset-0 z-20 md:static' : 'hidden md:block'}
                     ${dimUI}
                 `}>
-                    <h3 className="text-center font-bold mb-4 border-b border-border pb-2">Session Stats</h3>
+                    <div className="text-center mb-4 border-b border-border pb-3">
+                        <h2 className="text-sm uppercase tracking-widest text-text-muted font-bold">Session Stats</h2>
+                    </div>
                     
                     {/* General Stats */}
                     <div className="grid grid-cols-2 gap-x-2 gap-y-1 mb-4">
@@ -542,7 +559,7 @@ export default function Timer() {
             </div>
 
             {/* MOBILE NAV */}
-            <div className={`md:hidden flex shrink-0 bg-surface border-t border-border pb-safe ${timerState === 'running' ? 'hidden' : ''}`}>
+            <div className={`md:hidden flex shrink-0 bg-surface/90 backdrop-blur-sm border-t border-border pb-safe ${timerState === 'running' ? 'hidden' : ''}`}>
                 <NavButton active={mobileView === 'solves'} onClick={() => setMobileView('solves')} label="Solves" count={solves.length} />
                 <NavButton active={mobileView === 'timer'} onClick={() => setMobileView('timer')} label={isTypingMode ? "Input" : "Timer"} icon={true} />
                 <NavButton active={mobileView === 'stats'} onClick={() => setMobileView('stats')} label="Stats" />

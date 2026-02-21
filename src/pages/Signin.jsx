@@ -28,7 +28,7 @@ export function Signin() {
             localStorage.setItem("token", data.token);
             localStorage.setItem("shareLink", data.shareLink);
             localStorage.setItem("user", email);
-            navigate("/dashboard");
+            navigate("/dashboard/timer");
         } catch (err) {
             setError(err.response?.data?.message || "Invalid credentials");
             setLoading(false);
@@ -56,7 +56,7 @@ export function Signin() {
                     <CardTitle className="text-center text-3xl mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
                         Welcome Back
                     </CardTitle>
-                    <p className="text-center text-slate-400 text-sm">Sign in to continue your cubing journey</p>
+                    <p className="text-center text-slate-400 text-sm">Sign in to continue your speedcubing journey</p>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-5">
                     <Input 
