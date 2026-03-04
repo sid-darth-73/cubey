@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, Fragment } from 'react';
 import { generateScramble, applyScramble } from 'react-rubiks-cube-utils';
 import { Cube2D } from '../../utils/Cube2D';
-import { Settings2, Keyboard, Timer as TimerIcon, Trash2, X } from 'lucide-react';
+import { Settings2, Keyboard, Timer as TimerIcon, Trash2, X, UploadCloud, RefreshCw } from 'lucide-react';
+import api from '../../utils/api';
 
 // --- Configuration ---
 const BATCH_SIZES = [5, 12, 25, 50, 100, 200, 500, 1000];
@@ -72,8 +73,15 @@ export default function Timer() {
     const [mobileView, setMobileView] = useState('timer');
 
     // --- Data State ---
-    const [solves, setSolves] = useState([]);
+    const [localBuffer, setLocalBuffer] = useState([]);
+    const [dbSolves, setDbSolves] = useState([]);
+    const solves = useMemo(() => [...dbSolves, ...localBuffer], [dbSolves, localBuffer]);
+    
+    // Filters
+    // MaxTime filter removed
+
     const [isLoaded, setIsLoaded] = useState(false);
+    const [isSyncing, setIsSyncing] = useState(false);
 
     // --- Modal State ---
     const [selectedSolveId, setSelectedSolveId] = useState(null);
@@ -99,6 +107,30 @@ export default function Timer() {
         if (savedSession) setSession(savedSession);
         setIsLoaded(true);
     }, []);
+    
+    // Fetch DB Solves
+    const fetchDbSolves = useCallback(async () => {
+        try {
+            let url = `/solves?sessionNumber=${session}&type=${cubetype}`;
+            const { data } = await api.get(url);
+            
+            // Map DB format to Timer format
+            const mapped = data.map(d => ({
+                id: d._id,
+                time: Math.round(d.timeInSeconds * 1000), // Backend returns seconds, Timer uses MS
+                type: d.type,
+                penalty: d.penalty || '', 
+                scramble: d.scramble,
+                comment: d.comment || '',
+                timestamp: new Date(d.createdAt).getTime(),
+                session: d.sessionNumber?.toString() || session,
+                isDb: true // Flag to identify DB solves
+            }));
+            setDbSolves(mapped);
+        } catch (error) {
+            console.error('Failed to fetch solves', error);
+        }
+    }, [session, cubetype]);
 
     useEffect(() => {
         if (!isLoaded) return;
@@ -106,24 +138,58 @@ export default function Timer() {
         localStorage.setItem("session", session);
         setScramble(generateScramble({ type: cubetype }));
 
-        const sessionKey = `session_v2_${session}`; 
+        const sessionKey = `buffer_${session}_${cubetype}`; 
         const storedData = localStorage.getItem(sessionKey);
         if (storedData) {
-            try { setSolves(JSON.parse(storedData)); } catch (e) { setSolves([]); }
-        } else { setSolves([]); }
-    }, [cubetype, session, isLoaded]);
+            try { setLocalBuffer(JSON.parse(storedData)); } catch (e) { setLocalBuffer([]); }
+        } else { setLocalBuffer([]); }
+        
+        fetchDbSolves();
+    }, [cubetype, session, isLoaded, fetchDbSolves]);
 
     useEffect(() => {
         if (!isLoaded) return;
-        const sessionKey = `session_v2_${session}`;
-        localStorage.setItem(sessionKey, JSON.stringify(solves));
-    }, [solves, session, isLoaded]);
+        const sessionKey = `buffer_${session}_${cubetype}`;
+        localStorage.setItem(sessionKey, JSON.stringify(localBuffer));
+    }, [localBuffer, session, cubetype, isLoaded]);
+    
+    // --- Export Logic ---
+    const exportSolves = useCallback(async (solvesToExport) => {
+        if (solvesToExport.length === 0) return;
+        setIsSyncing(true);
+        try {
+            const payload = solvesToExport.map(s => ({
+                scramble: s.scramble,
+                timeInSeconds: s.time / 1000, // Frontend uses MS, Backend expects Seconds
+                type: s.type,
+                penalty: s.penalty,
+                comment: s.comment,
+                sessionNumber: Number(s.session)
+            }));
+            
+            await api.post('/solves/batch', { solves: payload });
+            setLocalBuffer([]);
+            await fetchDbSolves(); // Refresh from DB
+        } catch (error) {
+            console.error('Failed to export solves', error);
+            alert('Failed to sync to server');
+        } finally {
+            setIsSyncing(false);
+        }
+    }, [fetchDbSolves]);
+    
+    // Auto-export on 25 solves
+    useEffect(() => {
+        if (localBuffer.length >= 25 && !isSyncing) {
+            exportSolves(localBuffer);
+        }
+    }, [localBuffer, isSyncing, exportSolves]);
 
     useEffect(() => {
         if (isTypingMode && inputRef.current) {
             inputRef.current.focus();
         }
-    }, [isTypingMode, solves]);
+    }, [isTypingMode, localBuffer, dbSolves]);
 
     // --- Stats Calculation Engine ---
     const stats = useMemo(() => {
@@ -183,7 +249,7 @@ export default function Timer() {
             timestamp: Date.now(),
             session: session
         };
-        setSolves(prev => [...prev, newSolve]);
+        setLocalBuffer(prev => [...prev, newSolve]);
         setPrevscramble(()=>scramble);
         setScramble(generateScramble({ type: cubetype }));
     }, [cubetype, scramble, session]);
@@ -242,9 +308,9 @@ export default function Timer() {
 
             if (e.altKey && (e.code === "KeyZ" || e.key === 'z')) {
                 e.preventDefault();
-                if (timerStateRef.current === 'idle' && solves.length > 0) {
+                if (timerStateRef.current === 'idle' && localBuffer.length > 0) {
                     if (confirm(`Delete last solve?`)) {
-                        setSolves(prev => prev.slice(0, -1));
+                        setLocalBuffer(prev => prev.slice(0, -1));
                     }
                 }
             }
@@ -286,13 +352,30 @@ export default function Timer() {
     }, [selectedSolveId, startTimer, mobileView, isTypingMode]);
 
     // --- Sub-functions ---
-    const updateSolve = (id, updates) => {
-        setSolves(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
+    const updateSolveLocally = (id, updates) => {
+        setLocalBuffer(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
+        setDbSolves(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
     };
 
-    const deleteSolve = (id) => {
+    const handleUpdatePenalty = async (id, newPenalty, isDb) => {
+        updateSolveLocally(id, { penalty: newPenalty });
+        if (isDb) {
+            try {
+                await api.patch(`/solves/${id}`, { penalty: newPenalty });
+            } catch(e) { console.error('Failed to update DB penalty', e); }
+        }
+    };
+
+    const deleteSolveUI = async (id, isDb) => {
         if(confirm("Delete this solve?")) {
-            setSolves(prev => prev.filter(s => s.id !== id));
+            if (isDb) {
+               try {
+                   await api.delete(`/solves/${id}`);
+                   setDbSolves(prev => prev.filter(s => s.id !== id));
+               } catch(e) { console.error('Failed to delete DB solve', e); }
+            } else {
+               setLocalBuffer(prev => prev.filter(s => s.id !== id));
+            }
             setSelectedSolveId(null);
         }
     };
@@ -324,22 +407,27 @@ export default function Timer() {
                         </div>
                         <div className="flex justify-center gap-3">
                             <button 
-                                onClick={() => updateSolve(selectedSolve.id, { penalty: selectedSolve.penalty === '+2' ? '' : '+2' })}
+                                onClick={() => handleUpdatePenalty(selectedSolve.id, selectedSolve.penalty === '+2' ? '' : '+2', selectedSolve.isDb)}
                                 className={`flex-1 py-3 rounded border text-lg font-bold transition-colors ${selectedSolve.penalty === '+2' ? 'bg-yellow-600 border-yellow-400 text-white' : 'border-border hover:bg-surface-hover text-text-muted'}`}
                             >+2</button>
                             <button 
-                                onClick={() => updateSolve(selectedSolve.id, { penalty: selectedSolve.penalty === 'DNF' ? '' : 'DNF' })}
+                                onClick={() => handleUpdatePenalty(selectedSolve.id, selectedSolve.penalty === 'DNF' ? '' : 'DNF', selectedSolve.isDb)}
                                 className={`flex-1 py-3 rounded border text-lg font-bold transition-colors ${selectedSolve.penalty === 'DNF' ? 'bg-red-600 border-red-400 text-white' : 'border-border hover:bg-surface-hover text-text-muted'}`}
                             >DNF</button>
                             <button 
-                                onClick={() => deleteSolve(selectedSolve.id)}
+                                onClick={() => deleteSolveUI(selectedSolve.id, selectedSolve.isDb)}
                                 className="flex-1 py-3 rounded border border-red-500/50 text-red-400 hover:bg-red-500/20"
                             >Del</button>
                         </div>
                         <textarea 
                             className="w-full bg-surface border border-border rounded p-2 text-sm font-mono h-20 focus:border-primary outline-none transition-colors text-text-main"
-                            value={selectedSolve.comment}
-                            onChange={(e) => updateSolve(selectedSolve.id, { comment: e.target.value })}
+                            value={selectedSolve.comment || ""}
+                            onChange={(e) => updateSolveLocally(selectedSolve.id, { comment: e.target.value })}
+                            onBlur={(e) => {
+                                if (selectedSolve.isDb) {
+                                    api.patch(`/solves/${selectedSolve.id}`, { comment: e.target.value }).catch(err => console.error("failed to patch comment", err));
+                                }
+                            }}
                             placeholder="Comment..."
                         />
                     </div>
@@ -367,6 +455,17 @@ export default function Timer() {
                     </select>
                 </div>
                 <div className="flex items-center gap-2">
+                    <div className="relative flex items-center hidden sm:flex">
+                        {/* Max Time Filter Removed */}
+                    </div>
+                    <button 
+                        onClick={() => exportSolves(localBuffer)}
+                        disabled={localBuffer.length === 0 || isSyncing}
+                        className={`hidden sm:flex px-3 py-2 rounded-lg border text-sm font-bold transition-colors items-center gap-2 ${localBuffer.length > 0 ? 'bg-primary/20 border-primary/50 text-primary hover:bg-primary/30' : 'bg-background/30 border-border text-text-muted opacity-50 cursor-not-allowed'}`}
+                    >
+                        {isSyncing ? <RefreshCw className="animate-spin" size={16}/> : <UploadCloud size={16}/>}
+                        Export ({localBuffer.length})
+                    </button>
                     <button 
                         onClick={() => setIsTypingMode(!isTypingMode)}
                         className={`px-4 py-2 rounded-lg border text-sm font-bold transition-colors ${isTypingMode ? 'bg-green-600 border-green-400 text-white' : 'bg-background/60 border-border text-text-main hover:bg-surface-hover hover:border-primary/50'}`}
@@ -539,11 +638,26 @@ export default function Timer() {
                         })}
                     </div>
                     
-                    <div className="mt-8 text-center">
+                    <div className="mt-8 text-center flex flex-col gap-2">
                         <button 
-                            onClick={() => { if(confirm("Clear this session?")) setSolves([]); }}
+                            onClick={async () => { 
+                                if(confirm("Clear this entire session including DB records?")) {
+                                    try {
+                                        setIsSyncing(true);
+                                        await api.post('/solves/reset', { sessionNumber: Number(session) });
+                                        setLocalBuffer([]);
+                                        setDbSolves([]);
+                                    } catch(e) { console.error('Failed to reset', e); alert('Failed to reset session'); }
+                                    finally { setIsSyncing(false); }
+                                }
+                            }}
                             className="w-full bg-red-500/20 hover:bg-red-600 border border-red-500/50 text-red-200 px-4 py-2 rounded text-xs uppercase tracking-widest transition"
-                        >Reset Session</button>
+                        >Reset Full Session</button>
+                        
+                        <button 
+                            onClick={() => { if(confirm("Clear un-exported local solves?")) setLocalBuffer([]); }}
+                            className="w-full bg-surface-hover hover:bg-border border border-border text-text-muted px-4 py-2 rounded text-xs uppercase tracking-widest transition"
+                        >Clear Local Buffer</button>
                     </div>
 
                     <div className='my-8 bg-surface border border-border rounded p-2'>

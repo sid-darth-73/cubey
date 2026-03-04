@@ -22,10 +22,24 @@ export default function Solves() {
   const [importError, setImportError] = useState("");
   const fileInputRef = useRef();
   const [loading, setLoading] = useState(false);
+  
+  // Filters
+  const [filterType, setFilterType] = useState('All');
+  const [filterMaxTime, setFilterMaxTime] = useState('');
+  const [filterComment, setFilterComment] = useState('');
+  const [filterDropdownOpen, setFilterDropdownOpen] = useState(false);
+  const filterDropdownRef = useRef();
 
   const fetchSolves = async () => {
     try {
-      const res = await axios.get('/solves');
+      let url = '/solves?';
+      if (filterType !== 'All') url += `type=${filterType}&`;
+      if (filterMaxTime) url += `maxTime=${filterMaxTime}&`;
+      
+      const trimmedComment = filterComment.trim();
+      if (trimmedComment) url += `comment=${encodeURIComponent(trimmedComment)}&`;
+      
+      const res = await axios.get(url);
       setSolves(res.data.reverse());
     } catch (err) {
       console.error("Failed to fetch solves:", err);
@@ -41,10 +55,18 @@ export default function Solves() {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setDropdownOpen(false);
       }
+      if (filterDropdownRef.current && !filterDropdownRef.current.contains(e.target)) {
+        setFilterDropdownOpen(false);
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Fetch when filters change
+  useEffect(() => {
+    fetchSolves();
+  }, [filterType, filterMaxTime, filterComment]);
 
   const handleDeleteSolve = async (id)=>{
     try {
@@ -201,7 +223,53 @@ export default function Solves() {
       </Card>
 
       <div className="space-y-4">
-        <h3 className="text-xl font-bold font-mont px-1">Recent Solves</h3>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center px-1 gap-4">
+          <h3 className="text-xl font-bold font-mont">Recent Solves</h3>
+          
+          <div className="flex gap-2 items-center w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+             <div className="relative shrink-0" ref={filterDropdownRef}>
+                <Button 
+                  variant="secondary" 
+                  size="sm"
+                  className="w-24 justify-between"
+                  onClick={() => setFilterDropdownOpen(!filterDropdownOpen)}
+                >
+                  {filterType}
+                  <ChevronDown size={14} />
+                </Button>
+
+                {filterDropdownOpen && (
+                  <div className="absolute top-full mt-2 w-28 z-50 bg-surface border border-border rounded-lg shadow-xl max-h-60 overflow-y-auto">
+                    {['All', ...eventOptions].map((ev) => (
+                      <button
+                        key={ev}
+                        onClick={() => { setFilterType(ev); setFilterDropdownOpen(false); }}
+                        className="w-full text-left px-4 py-2 text-sm hover:bg-surface-hover text-text-main transition-colors"
+                      >
+                        {ev}
+                      </button>
+                    ))}
+                  </div>
+                )}
+             </div>
+             
+             <input
+                type="number"
+                placeholder="Max Time (s)"
+                value={filterMaxTime}
+                onChange={(e) => setFilterMaxTime(e.target.value)}
+                className="bg-surface border border-border px-3 py-1.5 w-32 rounded-lg text-text-main outline-none text-sm transition-colors focus:border-primary placeholder:text-text-muted/60 shrink-0"
+              />
+              
+              <input
+                type="text"
+                placeholder="Search comment..."
+                value={filterComment}
+                onChange={(e) => setFilterComment(e.target.value)}
+                className="bg-surface border border-border px-3 py-1.5 w-48 rounded-lg text-text-main outline-none text-sm transition-colors focus:border-primary placeholder:text-text-muted/60 shrink-0"
+              />
+          </div>
+        </div>
         
         {solves.length === 0 ? (
           <div className="text-center py-12 text-text-muted bg-surface/30 rounded-xl border border-dashed border-border">
@@ -235,7 +303,12 @@ export default function Solves() {
                     </div>
 
                     <div className="flex items-center gap-6 w-full md:w-auto justify-between md:justify-end">
-                      <div className="flex items-center gap-2 text-xl font-bold font-mono text-text-main">
+                      {solve.comment && (
+                        <div className="text-sm text-text-muted italic max-wxs truncate">
+                          "{solve.comment}"
+                        </div>
+                      )}
+                      <div className="flex items-center gap-2 text-xl font-bold font-mono text-text-main shrink-0">
                         <Timer size={18} className="text-text-muted" />
                         {solve.timeInSeconds.toFixed(2)}s
                       </div>
