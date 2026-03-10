@@ -7,7 +7,7 @@ import { ThemeToggle } from './ThemeToggle';
 export function DashboardLayout() {
   const user = localStorage.getItem('user');
   const shareLink = localStorage.getItem('shareLink');
-  const publicUrl = `https://cubey-nine.vercel.app/${shareLink}`;
+  const publicUrl = `https://speedsolversocial.in/${shareLink}`;
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -58,7 +58,7 @@ export function DashboardLayout() {
         {/* Sidebar Header */}
         <div className="p-6 border-b border-border/50">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-2xl font-bold font-mont text-primary tracking-wide">Cubey</h1>
+            <h1 className="text-2xl font-bold font-mont text-primary tracking-wide">Speed Solver Social</h1>
             <button className="text-text-muted hover:text-white" onClick={() => setSidebarOpen(false)}>
               <X size={24} />
             </button>
@@ -145,7 +145,7 @@ export function DashboardLayout() {
           <button onClick={() => setSidebarOpen(true)} className="text-text-main p-2 hover:bg-surface-hover rounded-lg transition-colors">
             <Menu size={24} />
           </button>
-          <h1 className="text-xl font-bold font-mont text-primary">Cubey</h1>
+          <h1 className="text-xl font-bold font-mont text-primary">Speed Solver Social</h1>
         </div>
 
         {/* Content Area - full bleed for Timer, contained for other pages */}

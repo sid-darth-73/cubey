@@ -1,4 +1,4 @@
-## Cubey serves the following speedcubing needs:
+## Speed Solver Social serves the following speedcubing needs:
 - A tracker for your speedcubing records across multiple events.
 - Sharing your best solves with your friends.
 - Algorithm trainer and keeping track of your best time for each alg.

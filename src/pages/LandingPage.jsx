@@ -43,7 +43,7 @@ export const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-background text-text-main overflow-hidden relative transition-colors duration-300">
-      <SEO title="Home" description="Level up your speedcubing with Cubey's smart timer, algorithm trainer, and statistics dashboard." />
+      <SEO title="Home" description="Level up your speedcubing with Speed Solver Social's timer, algorithm trainer, and statistics dashboard." />
       {/* Background Decor */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-3xl opacity-50"></div>
@@ -53,7 +53,7 @@ export const LandingPage = () => {
       <nav className="relative z-10 px-6 py-6 flex items-center justify-between max-w-7xl mx-auto">
         <div className="text-2xl font-bold font-mont tracking-wide flex items-center gap-2 text-text-main">
           <div className="w-8 h-8 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-lg"></div>
-          Cubey
+          Speed Solver Social
         </div>
         <div className="flex gap-4 items-center">
           <ThemeToggle />
@@ -103,7 +103,7 @@ export const LandingPage = () => {
       </main>
 
       <footer className="relative z-10 py-8 text-center text-text-muted text-sm border-t border-border mt-12 bg-surface/30 backdrop-blur-sm">
-        <p>Made with <span className="text-red-500">♥</span> by <a href="https://github.com/sid-darth-73/cubey" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition">unbit</a></p>
+        <p>Made with <span className="text-red-500">♥</span> by <a href="https://github.com/sid-darth-73/Speed Solver Social" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition">unbit</a></p>
       </footer>
     </div>
   );

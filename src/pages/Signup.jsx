@@ -53,7 +53,7 @@ export function Signup() {
             <Card className="w-full max-w-md relative z-10 border-white/10 bg-surface/50">
                 <CardHeader>
                     <CardTitle className="text-center text-3xl mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
-                        Join Cubey
+                        Join Speed Solver Social
                     </CardTitle>
                     <p className="text-center text-slate-400 text-sm">
                         Track your PBs, drill algs, and level up!
