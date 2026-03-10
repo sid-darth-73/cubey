@@ -5,6 +5,7 @@ import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
 import { Card, CardContent } from "../../components/ui/Card";
 import { Trash2, Shuffle, Play, Square, Timer } from 'lucide-react';
+import SEO from '../../components/SEO';
 
 export default function Learn() {
   const [category, setCategory] = useState("3x3");
@@ -186,6 +187,7 @@ export default function Learn() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-6rem)] gap-4 animate-in fade-in duration-500">
+      <SEO title="Learn Algorithms" description="Master new algorithms by training and transition from 2-Look to full CFOP and beyond." />
       
       {/* Control Panel */}
       <Card className="flex-shrink-0">

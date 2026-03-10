@@ -3,6 +3,7 @@ import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Trophy, Timer, BookOpen, Share2, Upload } from 'lucide-react';
 import { ThemeToggle } from '../components/ThemeToggle';
+import SEO from '../components/SEO';
 
 export const LandingPage = () => {
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ export const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-background text-text-main overflow-hidden relative transition-colors duration-300">
+      <SEO title="Home" description="Level up your speedcubing with Cubey's smart timer, algorithm trainer, and statistics dashboard." />
       {/* Background Decor */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-3xl opacity-50"></div>

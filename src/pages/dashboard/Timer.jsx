@@ -3,6 +3,7 @@ import { generateScramble, applyScramble } from 'react-rubiks-cube-utils';
 import { Cube2D } from '../../utils/Cube2D';
 import { Settings2, Keyboard, Timer as TimerIcon, Trash2, X, UploadCloud, RefreshCw } from 'lucide-react';
 import api from '../../utils/api';
+import SEO from '../../components/SEO';
 
 // --- Configuration ---
 const BATCH_SIZES = [5, 12, 25, 50, 100, 200, 500, 1000];
@@ -391,6 +392,7 @@ export default function Timer() {
 
     return (
         <div className="bg-gradient-to-br from-background via-background to-surface/30 flex-1 flex flex-col min-h-full text-text-main font-sans relative overflow-hidden">
+            <SEO title="Timer" description="Time your Rubik's Cube solves with millisecond precision, track Ao5 and Ao12, and analyze your stats." />
             
             {/* --- DETAILS MODAL --- */}
             {selectedSolveId && selectedSolve && (
@@ -461,16 +463,16 @@ export default function Timer() {
                     <button 
                         onClick={() => exportSolves(localBuffer)}
                         disabled={localBuffer.length === 0 || isSyncing}
-                        className={`hidden sm:flex px-3 py-2 rounded-lg border text-sm font-bold transition-colors items-center gap-2 ${localBuffer.length > 0 ? 'bg-primary/20 border-primary/50 text-primary hover:bg-primary/30' : 'bg-background/30 border-border text-text-muted opacity-50 cursor-not-allowed'}`}
+                        className={`flex px-3 py-2 rounded-lg border text-sm font-bold transition-colors items-center gap-2 ${localBuffer.length > 0 ? 'bg-primary/20 border-primary/50 text-primary hover:bg-primary/30' : 'bg-background/30 border-border text-text-muted opacity-50 cursor-not-allowed'}`}
                     >
                         {isSyncing ? <RefreshCw className="animate-spin" size={16}/> : <UploadCloud size={16}/>}
-                        Export ({localBuffer.length})
+                        <span className="hidden sm:inline">Export</span> ({localBuffer.length})
                     </button>
                     <button 
                         onClick={() => setIsTypingMode(!isTypingMode)}
-                        className={`px-4 py-2 rounded-lg border text-sm font-bold transition-colors ${isTypingMode ? 'bg-green-600 border-green-400 text-white' : 'bg-background/60 border-border text-text-main hover:bg-surface-hover hover:border-primary/50'}`}
+                        className={`flex px-3 py-2 rounded-lg border text-sm font-bold transition-colors items-center gap-2 ${isTypingMode ? 'bg-green-600 border-green-400 text-white' : 'bg-background/60 border-border text-text-main hover:bg-surface-hover hover:border-primary/50'}`}
                     >
-                        {isTypingMode ? "⌨️ Manual input" : "⏱ Timer"}
+                        {isTypingMode ? <><span className="text-base leading-none">⌨️</span><span className="hidden sm:inline"> Manual input</span></> : <><span className="text-base leading-none">⏱</span><span className="hidden sm:inline"> Timer</span></>}
                     </button>
                 </div>
             </div>

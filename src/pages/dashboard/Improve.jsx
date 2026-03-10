@@ -1,5 +1,6 @@
 import { Card, CardContent } from "../../components/ui/Card";
 import { Trophy, Timer, TrendingUp, Mail, Instagram, MessageCircle } from 'lucide-react';
+import SEO from '../../components/SEO';
 
 export function Improve() {
   const socialLinks = [
@@ -31,6 +32,7 @@ export function Improve() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] animate-in fade-in duration-500 px-4">
+      <SEO title="Improve" description="Get personalized feedback, solve critiques, and practice routines from an experienced speedcuber." />
       <Card className="w-full max-w-2xl bg-surface/50 border-border">
         <CardContent className="flex flex-col items-center text-center p-8 md:p-12">
           
