@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Swords, Trophy, Clock, Flag, CheckCircle2, Loader2, RotateCcw, Home } from 'lucide-react';
+import { Swords, Clock, Flag, CheckCircle2, Loader2, Home } from 'lucide-react';
 import { useSocket } from '../../context/SocketContext';
 import api from '../../utils/api';
 
@@ -22,11 +22,11 @@ function formatTime(ms) {
 // ── Battle phases ─────────────────────────────────────────────────────────────
 const PHASE = {
   LOADING: 'loading',
-  WAITING_READY: 'waiting_ready',     // in room, waiting for both ready
-  COUNTDOWN: 'countdown',             // 3-2-1 visual before timer starts
-  SOLVING: 'solving',                 // timer running
-  WAITING_OPPONENT: 'waiting_opponent', // submitted, waiting for opponent
-  RESULT: 'result',                   // both submitted, show winner
+  WAITING_READY: 'waiting_ready',
+  COUNTDOWN: 'countdown',
+  SOLVING: 'solving',
+  WAITING_OPPONENT: 'waiting_opponent',
+  RESULT: 'result',
 };
 
 export default function BattleRoom() {
@@ -48,7 +48,7 @@ export default function BattleRoom() {
   const [timerMs, setTimerMs] = useState(0);
   const timerIntervalRef = useRef(null);
   const startTimestampRef = useRef(null);
-  const solveTimeRef = useRef(null); // final recorded time
+  const solveTimeRef = useRef(null);
 
   const myUserId = (() => {
     try {
@@ -157,7 +157,6 @@ export default function BattleRoom() {
     solveTimeRef.current = elapsed;
     setTimerMs(elapsed);
     setPhase(PHASE.WAITING_OPPONENT);
-    // Submit immediately with no penalty — user can add +2/DNF before confirming
   };
 
   const handleSubmit = async (chosenPenalty = '') => {
@@ -195,22 +194,28 @@ export default function BattleRoom() {
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-background text-text-main font-quick flex flex-col items-center justify-center p-4 relative overflow-hidden">
-
-      {/* Ambient glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-blue-500/5 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[400px] h-[200px] bg-purple-500/5 rounded-full blur-3xl pointer-events-none" />
-
-      {/* Header */}
+    <div
+      className="min-h-screen flex flex-col items-center justify-center p-4"
+      style={{ backgroundColor: '#121212', color: '#ffffff' }}
+    >
+      {/* Header bar */}
       <div className="w-full max-w-lg mb-6 flex items-center gap-3">
-        <div className="flex items-center gap-2 text-text-muted text-sm">
-          <Swords size={16} className="text-blue-400" />
-          <span className="font-mono text-xs opacity-60">BATTLE</span>
+        <div className="flex items-center gap-2">
+          <Swords size={16} style={{ color: '#1ed760' }} />
+          <span
+            className="font-mono text-[11px] font-bold uppercase tracking-widest"
+            style={{ color: '#b3b3b3' }}
+          >
+            Battle
+          </span>
         </div>
-        <div className="h-px flex-1 bg-border/50" />
+        <div className="h-px flex-1" style={{ backgroundColor: '#282828' }} />
         <button
           onClick={() => navigate('/dashboard')}
-          className="text-text-muted hover:text-text-main transition-colors"
+          className="p-2 rounded-full transition-colors"
+          style={{ color: '#b3b3b3' }}
+          onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.backgroundColor = '#1f1f1f'; }}
+          onMouseLeave={e => { e.currentTarget.style.color = '#b3b3b3'; e.currentTarget.style.backgroundColor = 'transparent'; }}
         >
           <Home size={16} />
         </button>
@@ -218,75 +223,111 @@ export default function BattleRoom() {
 
       <div className="w-full max-w-lg space-y-4">
 
-        {/* ── LOADING ───────────────────────────────────────────── */}
+        {/* ── LOADING ─────────────────────────────────────────────── */}
         {phase === PHASE.LOADING && (
-          <div className="glass-panel rounded-2xl p-10 flex flex-col items-center gap-4">
-            <Loader2 size={32} className="text-blue-400 animate-spin" />
-            <p className="text-text-muted text-sm">Loading battle room…</p>
+          <div
+            className="rounded-lg p-10 flex flex-col items-center gap-4"
+            style={{ backgroundColor: '#181818' }}
+          >
+            <Loader2 size={32} className="animate-spin" style={{ color: '#1ed760' }} />
+            <p style={{ color: '#b3b3b3' }}>Loading battle room…</p>
           </div>
         )}
 
-        {/* ── SCRAMBLE (always visible once loaded) ─────────────── */}
+        {/* ── SCRAMBLE (always visible once loaded) ──────────────── */}
         {phase !== PHASE.LOADING && phase !== PHASE.RESULT && (
-          <div className="glass-panel rounded-2xl p-5 space-y-2">
-            <p className="text-xs text-text-muted uppercase tracking-widest font-semibold">Scramble</p>
-            <p className="font-mono text-lg text-text-main leading-snug tracking-wide">
+          <div
+            className="rounded-lg p-5 space-y-2"
+            style={{ backgroundColor: '#181818' }}
+          >
+            <p
+              className="text-[11px] uppercase tracking-widest font-bold"
+              style={{ color: '#b3b3b3' }}
+            >
+              Scramble
+            </p>
+            <p className="font-mono text-[17px] text-white leading-snug tracking-wide">
               {scramble}
             </p>
-            <p className="text-xs text-text-muted">Puzzle: <span className="text-blue-400 font-semibold">{room?.puzzleType || '3x3'}</span></p>
+            <p className="text-[12px]" style={{ color: '#b3b3b3' }}>
+              Puzzle:{' '}
+              <span className="font-bold" style={{ color: '#1ed760' }}>
+                {room?.puzzleType || '3x3'}
+              </span>
+            </p>
           </div>
         )}
 
-        {/* ── WAITING READY ─────────────────────────────────────── */}
+        {/* ── WAITING READY ──────────────────────────────────────── */}
         {phase === PHASE.WAITING_READY && (
-          <div className="glass-panel rounded-2xl p-6 space-y-5">
-            <h2 className="text-center font-bold text-lg font-mont text-text-main">
-              Get set…
-            </h2>
+          <div
+            className="rounded-lg p-6 space-y-5"
+            style={{ backgroundColor: '#181818' }}
+          >
+            <h2 className="text-center font-bold text-[18px] text-white">Get set…</h2>
 
-            <div className="flex justify-center gap-8">
+            <div className="flex justify-center gap-10">
               <StatusPip label="You" ready={selfReady} />
-              <div className="flex items-center text-text-muted text-lg font-bold">VS</div>
+              <div className="flex items-center font-bold text-[16px]" style={{ color: '#b3b3b3' }}>VS</div>
               <StatusPip label="Opponent" ready={opponentReady} />
             </div>
 
             {!selfReady ? (
               <button
                 onClick={handleReady}
-                className="w-full h-12 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold tracking-wide transition-all duration-200 shadow-lg shadow-blue-500/20 active:scale-95"
+                className="w-full h-12 rounded-full text-[14px] font-bold uppercase tracking-[1.4px] transition-all duration-200 active:scale-95"
+                style={{ backgroundColor: '#1ed760', color: '#000000' }}
+                onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1db954'}
+                onMouseLeave={e => e.currentTarget.style.backgroundColor = '#1ed760'}
               >
                 I'm Ready
               </button>
             ) : (
-              <div className="text-center text-sm text-text-muted animate-pulse">
+              <div className="text-center text-sm animate-pulse" style={{ color: '#b3b3b3' }}>
                 Waiting for opponent…
               </div>
             )}
           </div>
         )}
 
-        {/* ── COUNTDOWN ─────────────────────────────────────────── */}
+        {/* ── COUNTDOWN ──────────────────────────────────────────── */}
         {phase === PHASE.COUNTDOWN && (
-          <div className="glass-panel rounded-2xl p-10 flex flex-col items-center gap-4">
-            <p className="text-xs text-text-muted uppercase tracking-widest">Starting in</p>
-            <span className="text-9xl font-bold font-mont text-gradient animate-pulse">
+          <div
+            className="rounded-lg p-10 flex flex-col items-center gap-4"
+            style={{ backgroundColor: '#181818' }}
+          >
+            <p className="text-[11px] uppercase tracking-widest" style={{ color: '#b3b3b3' }}>
+              Starting in
+            </p>
+            <span
+              className="text-[120px] font-bold leading-none animate-pulse"
+              style={{ color: '#1ed760' }}
+            >
               {countdown}
             </span>
           </div>
         )}
 
-        {/* ── SOLVING — big timer ────────────────────────────────── */}
+        {/* ── SOLVING — big timer ─────────────────────────────────── */}
         {phase === PHASE.SOLVING && (
           <div
-            className="glass-panel rounded-2xl p-8 flex flex-col items-center gap-6 cursor-pointer select-none active:scale-[0.99] transition-transform"
+            className="rounded-lg p-8 flex flex-col items-center gap-6 cursor-pointer select-none transition-colors active:scale-[0.99]"
+            style={{ backgroundColor: '#181818' }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1f1f1f'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = '#181818'}
             onClick={handleStopTimer}
           >
-            <p className="text-xs text-text-muted uppercase tracking-widest">Tap to stop</p>
-            <div className="font-mono text-7xl md:text-8xl font-bold text-gradient tabular-nums">
+            <p className="text-[11px] uppercase tracking-widest" style={{ color: '#b3b3b3' }}>
+              Tap to stop
+            </p>
+            <div className="font-mono text-[80px] md:text-[100px] font-bold tabular-nums text-white leading-none">
               {formatTime(timerMs)}
             </div>
-            <div className="flex items-center gap-2 text-xs text-text-muted">
-              <div className={`w-2 h-2 rounded-full ${opponentSubmitted ? 'bg-green-400' : 'bg-text-muted/30'}`} />
+            <div className="flex items-center gap-2 text-[12px]" style={{ color: '#b3b3b3' }}>
+              <div
+                className="w-2 h-2 rounded-full"
+                style={{ backgroundColor: opponentSubmitted ? '#1ed760' : '#4d4d4d' }}
+              />
               {opponentSubmitted ? 'Opponent finished!' : 'Opponent solving…'}
             </div>
           </div>
@@ -294,27 +335,33 @@ export default function BattleRoom() {
 
         {/* ── WAITING OPPONENT — show your time + penalty selection ─ */}
         {phase === PHASE.WAITING_OPPONENT && (
-          <div className="glass-panel rounded-2xl p-6 space-y-5">
+          <div
+            className="rounded-lg p-6 space-y-5"
+            style={{ backgroundColor: '#181818' }}
+          >
             <div className="text-center">
-              <p className="text-xs text-text-muted uppercase tracking-widest mb-2">Your Time</p>
-              <div className="font-mono text-5xl font-bold text-gradient tabular-nums">
+              <p className="text-[11px] uppercase tracking-widest mb-2" style={{ color: '#b3b3b3' }}>
+                Your Time
+              </p>
+              <div className="font-mono text-[56px] font-bold tabular-nums text-white leading-none">
                 {formatTime(solveTimeRef.current)}
               </div>
             </div>
 
             {/* Penalty picker */}
             <div className="space-y-2">
-              <p className="text-xs text-text-muted text-center">Any penalty?</p>
+              <p className="text-[12px] text-center" style={{ color: '#b3b3b3' }}>Any penalty?</p>
               <div className="flex gap-2">
                 {['', '+2', 'DNF'].map((p) => (
                   <button
                     key={p}
                     onClick={() => setPenalty(p)}
-                    className={`flex-1 h-10 rounded-lg text-sm font-bold border transition-all duration-150 ${
+                    className="flex-1 h-10 rounded-full text-sm font-bold uppercase tracking-wider transition-all duration-150"
+                    style={
                       penalty === p
-                        ? 'bg-blue-500/20 border-blue-500 text-blue-400'
-                        : 'border-border text-text-muted hover:border-border hover:bg-surface-hover'
-                    }`}
+                        ? { backgroundColor: '#1ed760', color: '#000000', border: 'none' }
+                        : { backgroundColor: 'transparent', color: '#b3b3b3', border: '1px solid #4d4d4d' }
+                    }
                   >
                     {p === '' ? 'OK' : p}
                   </button>
@@ -324,31 +371,51 @@ export default function BattleRoom() {
 
             <button
               onClick={() => handleSubmit(penalty)}
-              className="w-full h-12 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold transition-all duration-200 shadow-lg shadow-blue-500/20 active:scale-95"
+              className="w-full h-12 rounded-full text-[14px] font-bold uppercase tracking-[1.4px] transition-all duration-200 active:scale-95"
+              style={{ backgroundColor: '#1ed760', color: '#000000' }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1db954'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = '#1ed760'}
             >
               Submit Solve
             </button>
 
-            <div className="flex items-center justify-center gap-2 text-xs text-text-muted animate-pulse">
+            <div className="flex items-center justify-center gap-2 text-[12px] animate-pulse" style={{ color: '#b3b3b3' }}>
               <Loader2 size={12} className="animate-spin" />
               Waiting for opponent…
             </div>
           </div>
         )}
 
-        {/* ── RESULT ────────────────────────────────────────────── */}
+        {/* ── RESULT ──────────────────────────────────────────────── */}
         {phase === PHASE.RESULT && result && (
-          <div className="glass-panel rounded-2xl overflow-hidden">
+          <div
+            className="rounded-lg overflow-hidden"
+            style={{ backgroundColor: '#181818', boxShadow: 'rgba(0,0,0,0.5) 0px 8px 24px' }}
+          >
             {/* Winner banner */}
-            <div className={`px-6 py-5 text-center ${result.isDraw ? 'bg-yellow-500/10' : iWon ? 'bg-green-500/10' : 'bg-red-500/10'}`}>
-              <div className="text-4xl mb-1">
+            <div
+              className="px-6 py-6 text-center"
+              style={{
+                backgroundColor: result.isDraw
+                  ? 'rgba(255,164,43,0.08)'
+                  : iWon
+                  ? 'rgba(30,215,96,0.08)'
+                  : 'rgba(243,114,127,0.08)',
+              }}
+            >
+              <div className="text-5xl mb-2">
                 {result.isDraw ? '🤝' : iWon ? '🏆' : '😤'}
               </div>
-              <h2 className={`text-2xl font-bold font-mont ${result.isDraw ? 'text-yellow-400' : iWon ? 'text-green-400' : 'text-red-400'}`}>
+              <h2
+                className="text-[24px] font-bold"
+                style={{
+                  color: result.isDraw ? '#ffa42b' : iWon ? '#1ed760' : '#f3727f',
+                }}
+              >
                 {result.isDraw ? "It's a Draw!" : iWon ? 'You Won!' : 'You Lost'}
               </h2>
               {result.forfeitedBy && (
-                <p className="text-xs text-text-muted mt-1">Opponent forfeited</p>
+                <p className="text-xs mt-1" style={{ color: '#b3b3b3' }}>Opponent forfeited</p>
               )}
             </div>
 
@@ -361,10 +428,13 @@ export default function BattleRoom() {
             </div>
 
             {/* Actions */}
-            <div className="px-5 pb-5 flex gap-3">
+            <div className="px-5 pb-5">
               <button
                 onClick={() => navigate('/dashboard')}
-                className="flex-1 h-11 rounded-xl border border-border text-text-muted font-semibold text-sm hover:bg-surface-hover hover:text-text-main transition-all flex items-center justify-center gap-2"
+                className="w-full h-11 rounded-full text-[13px] font-bold uppercase tracking-[1.4px] transition-all flex items-center justify-center gap-2"
+                style={{ border: '1px solid #4d4d4d', color: '#b3b3b3', backgroundColor: 'transparent' }}
+                onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#1f1f1f'; e.currentTarget.style.color = '#ffffff'; }}
+                onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#b3b3b3'; }}
               >
                 <Home size={15} />
                 Dashboard
@@ -377,7 +447,10 @@ export default function BattleRoom() {
         {(phase === PHASE.SOLVING || phase === PHASE.WAITING_READY || phase === PHASE.WAITING_OPPONENT) && (
           <button
             onClick={handleForfeit}
-            className="w-full flex items-center justify-center gap-2 text-xs text-red-400/60 hover:text-red-400 transition-colors py-2"
+            className="w-full flex items-center justify-center gap-2 text-xs py-2 transition-colors"
+            style={{ color: 'rgba(243,114,127,0.5)' }}
+            onMouseEnter={e => e.currentTarget.style.color = '#f3727f'}
+            onMouseLeave={e => e.currentTarget.style.color = 'rgba(243,114,127,0.5)'}
           >
             <Flag size={12} />
             Forfeit battle
@@ -388,17 +461,29 @@ export default function BattleRoom() {
   );
 }
 
-// ── Sub-components ─────────────────────────────────────────────────────────────
+// ── Sub-components ──────────────────────────────────────────────────────────────
 
 function StatusPip({ label, ready }) {
   return (
     <div className="flex flex-col items-center gap-2">
-      <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
-        ready ? 'border-green-500 bg-green-500/10' : 'border-border bg-surface'
-      }`}>
-        {ready ? <CheckCircle2 size={18} className="text-green-400" /> : <Clock size={18} className="text-text-muted" />}
+      <div
+        className="w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300"
+        style={{
+          border: ready ? '2px solid #1ed760' : '2px solid #4d4d4d',
+          backgroundColor: ready ? 'rgba(30,215,96,0.1)' : '#1f1f1f',
+        }}
+      >
+        {ready
+          ? <CheckCircle2 size={18} style={{ color: '#1ed760' }} />
+          : <Clock size={18} style={{ color: '#b3b3b3' }} />
+        }
       </div>
-      <span className={`text-xs font-semibold ${ready ? 'text-green-400' : 'text-text-muted'}`}>{label}</span>
+      <span
+        className="text-xs font-bold"
+        style={{ color: ready ? '#1ed760' : '#b3b3b3' }}
+      >
+        {label}
+      </span>
     </div>
   );
 }
@@ -411,15 +496,22 @@ function ResultCard({ label, result, highlight }) {
     : '—';
 
   return (
-    <div className={`flex-1 rounded-xl p-4 border transition-all ${
-      highlight ? 'border-green-500/40 bg-green-500/5' : 'border-border bg-background/30'
-    }`}>
-      <p className="text-xs text-text-muted mb-1">{label}</p>
-      <p className={`font-mono text-2xl font-bold ${highlight ? 'text-green-400' : 'text-text-main'}`}>
+    <div
+      className="flex-1 rounded-lg p-4 transition-all"
+      style={{
+        border: highlight ? '1px solid rgba(30,215,96,0.3)' : '1px solid #282828',
+        backgroundColor: highlight ? 'rgba(30,215,96,0.05)' : '#1f1f1f',
+      }}
+    >
+      <p className="text-xs mb-1" style={{ color: '#b3b3b3' }}>{label}</p>
+      <p
+        className="font-mono text-[24px] font-bold"
+        style={{ color: highlight ? '#1ed760' : '#ffffff' }}
+      >
         {time}
       </p>
       {result?.penalty && result.penalty !== '' && (
-        <span className="text-xs text-orange-400 font-semibold">{result.penalty}</span>
+        <span className="text-xs font-semibold" style={{ color: '#ffa42b' }}>{result.penalty}</span>
       )}
     </div>
   );

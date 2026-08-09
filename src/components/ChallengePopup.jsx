@@ -71,98 +71,143 @@ export function ChallengePopup() {
     // Backdrop
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="absolute inset-0"
+        style={{ backgroundColor: 'rgba(0,0,0,0.75)' }}
         onClick={handleReject}
       />
 
-      {/* Card */}
-      <div className="relative z-10 w-full max-w-sm animate-in zoom-in-95 duration-200">
-        <div className="glass-panel rounded-2xl overflow-hidden shadow-2xl border border-border/50">
+      {/* Dialog Card */}
+      <div
+        className="relative z-10 w-full max-w-sm rounded-lg overflow-hidden"
+        style={{ backgroundColor: '#1f1f1f', boxShadow: 'rgba(0,0,0,0.5) 0px 8px 24px' }}
+      >
+        {/* Top accent strip — accent green */}
+        <div style={{ height: '3px', backgroundColor: '#1ed760', width: '100%' }} />
 
-          {/* Glowing header strip */}
-          <div className="h-1 w-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
-
-          <div className="p-6 space-y-5">
-            {/* Icon + title */}
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30 flex items-center justify-center">
-                <Swords size={22} className="text-blue-400" />
-              </div>
-              <div>
-                <p className="text-xs text-text-muted uppercase tracking-widest font-semibold">Incoming Challenge</p>
-                <h2 className="text-lg font-bold font-mont text-text-main leading-tight">Battle Request</h2>
-              </div>
-
-              {/* Dismiss */}
-              <button
-                onClick={handleReject}
-                className="ml-auto text-text-muted hover:text-text-main transition-colors p-1 rounded-lg hover:bg-surface-hover"
+        <div className="p-6 space-y-5">
+          {/* Icon + title row */}
+          <div className="flex items-center gap-3">
+            <div
+              className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: '#1ed760' }}
+            >
+              <Swords size={20} style={{ color: '#000000' }} />
+            </div>
+            <div className="flex-1">
+              <p
+                className="text-[11px] uppercase tracking-widest font-semibold"
+                style={{ color: '#b3b3b3' }}
               >
-                <X size={18} />
-              </button>
+                Incoming Challenge
+              </p>
+              <h2 className="text-[16px] font-bold text-white leading-tight">Battle Request</h2>
             </div>
+            {/* Dismiss */}
+            <button
+              onClick={handleReject}
+              className="p-1.5 rounded-full transition-colors flex-shrink-0"
+              style={{ color: '#b3b3b3' }}
+              onMouseEnter={e => e.currentTarget.style.color = '#ffffff'}
+              onMouseLeave={e => e.currentTarget.style.color = '#b3b3b3'}
+            >
+              <X size={16} />
+            </button>
+          </div>
 
-            {/* Challenger info */}
-            <div className="flex items-center gap-3 p-3 bg-background/50 rounded-xl border border-border/50">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-sm font-bold text-white flex-shrink-0">
-                {incomingChallenge.challenger.email?.substring(0, 2).toUpperCase()}
-              </div>
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-text-main truncate">
-                  {incomingChallenge.challenger.email}
-                </p>
-                <p className="text-xs text-text-muted">wants to battle you</p>
-              </div>
+          {/* Challenger info */}
+          <div
+            className="flex items-center gap-3 p-3 rounded-lg"
+            style={{ backgroundColor: '#121212' }}
+          >
+            <div
+              className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0"
+              style={{ backgroundColor: '#252525', color: '#b3b3b3' }}
+            >
+              {incomingChallenge.challenger.email?.substring(0, 2).toUpperCase()}
             </div>
-
-            {/* Puzzle type badge */}
-            <div className="flex items-center justify-between px-1">
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-text-muted">Puzzle</span>
-                <span className="px-2.5 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold border border-blue-500/20">
-                  {incomingChallenge.puzzleType}
-                </span>
-              </div>
-
-              {/* Countdown */}
-              <div className={`flex items-center gap-1.5 text-sm font-mono font-bold transition-colors ${urgency ? 'text-red-400 animate-pulse' : 'text-text-muted'}`}>
-                <Clock size={14} />
-                <span>{secondsLeft}s</span>
-              </div>
+            <div className="min-w-0">
+              <p className="text-sm font-bold text-white truncate">
+                {incomingChallenge.challenger.email}
+              </p>
+              <p className="text-xs" style={{ color: '#b3b3b3' }}>wants to battle you</p>
             </div>
+          </div>
 
-            {/* Timer bar */}
-            <div className="h-1 w-full bg-surface rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-1000 ${urgency ? 'bg-red-500' : 'bg-blue-500'}`}
-                style={{ width: `${(secondsLeft / 60) * 100}%` }}
-              />
-            </div>
-
-            {/* Action buttons */}
-            <div className="flex gap-3 pt-1">
-              <button
-                onClick={handleReject}
-                disabled={responding}
-                className="flex-1 h-11 rounded-xl border border-border text-text-muted font-semibold text-sm hover:bg-surface-hover hover:text-text-main transition-all duration-200 disabled:opacity-50"
+          {/* Puzzle type + countdown */}
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center gap-2">
+              <span className="text-xs" style={{ color: '#b3b3b3' }}>Puzzle</span>
+              <span
+                className="px-2.5 py-0.5 rounded-full text-xs font-bold"
+                style={{ backgroundColor: '#1ed760', color: '#000000' }}
               >
-                Decline
-              </button>
-              <button
-                onClick={handleAccept}
-                disabled={responding}
-                className="flex-1 h-11 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold text-sm transition-all duration-200 shadow-lg shadow-blue-500/20 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {responding ? (
-                  <span className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                ) : (
-                  <>
-                    <Swords size={16} />
-                    Accept
-                  </>
-                )}
-              </button>
+                {incomingChallenge.puzzleType}
+              </span>
             </div>
+
+            {/* Countdown */}
+            <div
+              className={`flex items-center gap-1.5 text-sm font-mono font-bold transition-colors ${urgency ? 'animate-pulse' : ''}`}
+              style={{ color: urgency ? '#f3727f' : '#b3b3b3' }}
+            >
+              <Clock size={14} />
+              <span>{secondsLeft}s</span>
+            </div>
+          </div>
+
+          {/* Timer progress bar */}
+          <div
+            className="h-0.5 w-full rounded-full overflow-hidden"
+            style={{ backgroundColor: '#252525' }}
+          >
+            <div
+              className="h-full rounded-full transition-all duration-1000"
+              style={{
+                width: `${(secondsLeft / 60) * 100}%`,
+                backgroundColor: urgency ? '#f3727f' : '#1ed760',
+              }}
+            />
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex gap-3 pt-1">
+            <button
+              onClick={handleReject}
+              disabled={responding}
+              className="flex-1 h-11 rounded-full text-[13px] font-bold uppercase tracking-[1.4px] transition-all duration-200 disabled:opacity-50"
+              style={{
+                border: '1px solid #4d4d4d',
+                color: '#b3b3b3',
+                backgroundColor: 'transparent',
+              }}
+              onMouseEnter={e => {
+                e.currentTarget.style.backgroundColor = '#1f1f1f';
+                e.currentTarget.style.color = '#ffffff';
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.backgroundColor = 'transparent';
+                e.currentTarget.style.color = '#b3b3b3';
+              }}
+            >
+              Decline
+            </button>
+            <button
+              onClick={handleAccept}
+              disabled={responding}
+              className="flex-1 h-11 rounded-full text-[13px] font-bold uppercase tracking-[1.4px] transition-all duration-200 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+              style={{ backgroundColor: '#1ed760', color: '#000000' }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1db954'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor = '#1ed760'}
+            >
+              {responding ? (
+                <span className="h-4 w-4 rounded-full border-2 border-black border-t-transparent animate-spin" />
+              ) : (
+                <>
+                  <Swords size={15} />
+                  Accept
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>

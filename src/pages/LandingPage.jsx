@@ -1,8 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { Button } from '../components/ui/Button';
-import { Card } from '../components/ui/Card';
 import { Trophy, Timer, BookOpen, Share2, Upload } from 'lucide-react';
-import { ThemeToggle } from '../components/ThemeToggle';
 import SEO from '../components/SEO';
 
 export const LandingPage = () => {
@@ -11,99 +8,181 @@ export const LandingPage = () => {
   const features = [
     {
       icon: Trophy,
-      title: "Track PBs",
-      description: "Monitor your best singles and averages with detailed statistics.",
-      color: "text-yellow-400"
+      title: 'Track PBs',
+      description: 'Monitor your best singles and averages with detailed statistics.',
     },
     {
       icon: Timer,
-      title: "Smart Timer",
-      description: "Train smarter with our built-in timer and scramble generator.",
-      color: "text-red-400"
+      title: 'Smart Timer',
+      description: 'Train smarter with our built-in timer and scramble generator.',
     },
     {
       icon: BookOpen,
-      title: "Learn Algs",
-      description: "Master new algorithms and transition from 2-Look to full CFOP and beyond",
-      color: "text-blue-400"
+      title: 'Learn Algs',
+      description: 'Master new algorithms and transition from 2-Look to full CFOP and beyond',
     },
     {
       icon: Share2,
-      title: "Social Profile",
-      description: "Share your achievements with a unique public profile link.",
-      color: "text-purple-400"
+      title: 'Social Profile',
+      description: 'Share your achievements with a unique public profile link.',
     },
     {
       icon: Upload,
-      title: "Import Data",
-      description: "Seamlessly import your solve history from other timers.",
-      color: "text-green-400"
-    }
+      title: 'Import Data',
+      description: 'Seamlessly import your solve history from other timers.',
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-background text-text-main overflow-hidden relative transition-colors duration-300">
-      <SEO title="Home" description="Level up your speedcubing with Speed Solver Social's timer, algorithm trainer, and statistics dashboard." />
-      {/* Background Decor */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-3xl opacity-50"></div>
-        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-3xl opacity-50"></div>
-      </div>
+    <div
+      className="min-h-screen overflow-hidden relative"
+      style={{ backgroundColor: '#121212', color: '#ffffff' }}
+    >
+      <SEO
+        title="Home"
+        description="Level up your speedcubing with Speed Solver Social's timer, algorithm trainer, and statistics dashboard."
+      />
 
-      <nav className="relative z-10 px-6 py-6 flex items-center justify-between max-w-7xl mx-auto">
-        <div className="text-2xl font-bold font-mont tracking-wide flex items-center gap-2 text-text-main">
-          <div className="w-8 h-8 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-lg"></div>
-          Speed Solver Social
+      {/* Nav */}
+      <nav
+        className="relative z-10 px-6 py-5 flex items-center justify-between max-w-7xl mx-auto"
+        style={{ borderBottom: '1px solid #282828' }}
+      >
+        {/* Logo */}
+        <div className="flex items-center gap-2">
+          <div
+            className="w-7 h-7 rounded-md flex items-center justify-center text-black text-xs font-black"
+            style={{ backgroundColor: '#1ed760' }}
+          >
+            S
+          </div>
+          <span className="text-[16px] font-bold text-white">Speed Solver Social</span>
         </div>
-        <div className="flex gap-4 items-center">
-          <ThemeToggle />
-          <Button variant="ghost" onClick={() => navigate("/signin")}>Sign In</Button>
-          <Button variant="primary" onClick={() => navigate("/signup")}>Get Started</Button>
+
+        {/* Nav Actions */}
+        <div className="flex gap-3 items-center">
+          <button
+            onClick={() => navigate('/signin')}
+            className="px-5 py-2 rounded-full text-[14px] font-bold uppercase tracking-[1.4px] transition-all duration-200"
+            style={{ color: '#b3b3b3', backgroundColor: 'transparent' }}
+            onMouseEnter={e => {
+              e.currentTarget.style.color = '#ffffff';
+              e.currentTarget.style.backgroundColor = '#1f1f1f';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.color = '#b3b3b3';
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
+          >
+            Sign In
+          </button>
+          <button
+            onClick={() => navigate('/signup')}
+            className="px-6 py-2 rounded-full text-[14px] font-bold uppercase tracking-[1.4px] transition-all duration-200 active:scale-95"
+            style={{ backgroundColor: '#1ed760', color: '#000000' }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1db954'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = '#1ed760'}
+          >
+            Get Started
+          </button>
         </div>
       </nav>
 
-      <main className="relative z-10 px-6 py-16 md:py-24 max-w-5xl mx-auto flex flex-col items-center text-center">
-        <h1 className="text-5xl md:text-7xl font-bold font-mont mb-6 leading-tight">
-          Level Up Your <br />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Speedcubing</span>
+      {/* Hero */}
+      <main className="relative z-10 px-6 pt-20 pb-16 max-w-5xl mx-auto flex flex-col items-center text-center">
+        <p
+          className="text-[12px] font-bold uppercase tracking-[2px] mb-4"
+          style={{ color: '#1ed760' }}
+        >
+          The Speedcubing Platform
+        </p>
+
+        <h1 className="text-[48px] md:text-[72px] font-bold leading-[1.05] mb-6 tracking-tight">
+          Level Up Your
+          <br />
+          <span style={{ color: '#1ed760' }}>Speedcubing</span>
         </h1>
-        
-        <p className="text-lg md:text-xl text-text-muted max-w-2xl mb-10 leading-relaxed font-light">
-          The all-in-one platform to time, track, learn, and share your speedcubing journey. 
+
+        <p
+          className="text-[16px] md:text-[18px] max-w-2xl mb-10 leading-relaxed font-normal"
+          style={{ color: '#b3b3b3' }}
+        >
+          The all-in-one platform to time, track, learn, and share your speedcubing journey.
           Analyze your solves and break your PBs.
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 w-full justify-center mb-20">
-          <Button size="lg" className="w-full sm:w-auto px-8" onClick={() => navigate("/signup")}>
+        <div className="flex flex-col sm:flex-row gap-3 mb-24">
+          <button
+            onClick={() => navigate('/signup')}
+            className="px-10 py-3.5 rounded-full text-[14px] font-bold uppercase tracking-[2px] transition-all duration-200 active:scale-95"
+            style={{ backgroundColor: '#1ed760', color: '#000000' }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1db954'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = '#1ed760'}
+          >
             Start Cubing Now
-          </Button>
-          <Button size="lg" variant="secondary" className="w-full sm:w-auto px-8" onClick={() => navigate("/signin")}>
+          </button>
+          <button
+            onClick={() => navigate('/signin')}
+            className="px-10 py-3.5 rounded-full text-[14px] font-bold uppercase tracking-[1.4px] transition-all duration-200"
+            style={{
+              backgroundColor: 'transparent',
+              color: '#ffffff',
+              border: '1px solid #7c7c7c',
+            }}
+            onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1f1f1f'}
+            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+          >
             Login
-          </Button>
+          </button>
         </div>
 
-
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full text-left">
+        {/* Feature Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full text-left">
           {features.map((feature, idx) => {
             const Icon = feature.icon;
             return (
-              <Card key={idx} className="hover:-translate-y-1 transition-transform duration-300 border-border/50 hover:border-primary/20 bg-surface/50 backdrop-blur-sm">
-                <div className={`p-3 rounded-lg bg-surface w-fit mb-4 ${feature.color}`}>
-                  <Icon size={24} />
+              <div
+                key={idx}
+                className="p-5 rounded-lg transition-all duration-200"
+                style={{ backgroundColor: '#181818', boxShadow: 'rgba(0,0,0,0.3) 0px 8px 8px' }}
+                onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1f1f1f'}
+                onMouseLeave={e => e.currentTarget.style.backgroundColor = '#181818'}
+              >
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center mb-4"
+                  style={{ backgroundColor: '#1ed760' }}
+                >
+                  <Icon size={18} style={{ color: '#000000' }} />
                 </div>
-                <h3 className="text-xl font-bold mb-2 font-mont text-text-main">{feature.title}</h3>
-                <p className="text-text-muted text-sm leading-relaxed">
+                <h3 className="text-[16px] font-bold mb-2 text-white">{feature.title}</h3>
+                <p className="text-[14px] leading-relaxed" style={{ color: '#b3b3b3' }}>
                   {feature.description}
                 </p>
-              </Card>
+              </div>
             );
           })}
         </div>
       </main>
 
-      <footer className="relative z-10 py-8 text-center text-text-muted text-sm border-t border-border mt-12 bg-surface/30 backdrop-blur-sm">
-        <p>Made with <span className="text-red-500">♥</span> by <a href="https://github.com/sid-darth-73/Speed Solver Social" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition">unbit</a></p>
+      {/* Footer */}
+      <footer
+        className="relative z-10 py-6 text-center text-[12px]"
+        style={{ color: '#b3b3b3', borderTop: '1px solid #282828' }}
+      >
+        <p>
+          Made with <span style={{ color: '#f3727f' }}>♥</span> by{' '}
+          <a
+            href="https://github.com/sid-darth-73/Speed Solver Social"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-bold transition-colors"
+            style={{ color: '#b3b3b3' }}
+            onMouseEnter={e => e.currentTarget.style.color = '#1ed760'}
+            onMouseLeave={e => e.currentTarget.style.color = '#b3b3b3'}
+          >
+            unbit
+          </a>
+        </p>
       </footer>
     </div>
   );

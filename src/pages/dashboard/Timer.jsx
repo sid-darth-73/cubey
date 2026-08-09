@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo, Fragment } from 'react';
 import { generateScramble, applyScramble } from 'react-rubiks-cube-utils';
 import { Cube2D } from '../../utils/Cube2D';
-import { Settings2, Keyboard, Timer as TimerIcon, Trash2, X, UploadCloud, RefreshCw } from 'lucide-react';
+import { RefreshCw, UploadCloud } from 'lucide-react';
 import api from '../../utils/api';
 import SEO from '../../components/SEO';
 
@@ -12,14 +12,14 @@ const BATCH_SIZES = [5, 12, 25, 50, 100, 200, 500, 1000];
 const formatTime = (ms, penalty = '') => {
     if (penalty === 'DNF') return 'DNF';
     if (ms === Infinity || ms === 0) return '-';
-    
+
     const finalTime = penalty === '+2' ? ms + 2000 : ms;
 
     const s = Math.floor(finalTime / 1000);
     const m = Math.floor(s / 60);
     const remS = s % 60;
     const remMs = Math.floor((finalTime % 1000) / 10);
-    
+
     const strS = remS < 10 ? `0${remS}` : remS;
     const strMs = remMs < 10 ? `0${remMs}` : remMs;
 
@@ -41,13 +41,13 @@ const calculateBatchAverage = (batch, size) => {
     });
 
     const trimCount = Math.ceil(size * 0.05);
-    
+
     if (dnfCount > trimCount) return -1;
 
     times.sort((a, b) => a - b);
-    
+
     const trimmed = times.slice(trimCount, times.length - trimCount);
-    
+
     if (trimmed.some(t => t === Infinity)) return -1;
 
     const sum = trimmed.reduce((a, b) => a + b, 0);
@@ -60,16 +60,16 @@ export default function Timer() {
     const [session, setSession] = useState("1");
     const [scramble, setScramble] = useState("");
     const [prevscramble, setPrevscramble] = useState("");
-    
+
     // --- Timer Logic State ---
     const [timerState, setTimerState] = useState('idle');
     const [timeDisplay, setTimeDisplay] = useState(0);
     const [checkState, setCheckState] = useState(false);
-    
+
     // --- Typing Mode State ---
     const [isTypingMode, setIsTypingMode] = useState(false);
     const [manualInput, setManualInput] = useState("");
-    
+
     // --- Layout State ---
     const [mobileView, setMobileView] = useState('timer');
 
@@ -77,16 +77,13 @@ export default function Timer() {
     const [localBuffer, setLocalBuffer] = useState([]);
     const [dbSolves, setDbSolves] = useState([]);
     const solves = useMemo(() => [...dbSolves, ...localBuffer], [dbSolves, localBuffer]);
-    
-    // Filters
-    // MaxTime filter removed
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [isSyncing, setIsSyncing] = useState(false);
 
     // --- Modal State ---
     const [selectedSolveId, setSelectedSolveId] = useState(null);
-    
+
     // --- Stats Display State ---
     const [showMeanMedian, setShowMeanMedian] = useState(true);
 
@@ -108,24 +105,22 @@ export default function Timer() {
         if (savedSession) setSession(savedSession);
         setIsLoaded(true);
     }, []);
-    
-    // Fetch DB Solves
+
     const fetchDbSolves = useCallback(async () => {
         try {
             let url = `/solves?sessionNumber=${session}&type=${cubetype}`;
             const { data } = await api.get(url);
-            
-            // Map DB format to Timer format
+
             const mapped = data.map(d => ({
                 id: d._id,
-                time: Math.round(d.timeInSeconds * 1000), // Backend returns seconds, Timer uses MS
+                time: Math.round(d.timeInSeconds * 1000),
                 type: d.type,
-                penalty: d.penalty || '', 
+                penalty: d.penalty || '',
                 scramble: d.scramble,
                 comment: d.comment || '',
                 timestamp: new Date(d.createdAt).getTime(),
                 session: d.sessionNumber?.toString() || session,
-                isDb: true // Flag to identify DB solves
+                isDb: true
             }));
             setDbSolves(mapped);
         } catch (error) {
@@ -139,12 +134,12 @@ export default function Timer() {
         localStorage.setItem("session", session);
         setScramble(generateScramble({ type: cubetype }));
 
-        const sessionKey = `buffer_${session}_${cubetype}`; 
+        const sessionKey = `buffer_${session}_${cubetype}`;
         const storedData = localStorage.getItem(sessionKey);
         if (storedData) {
             try { setLocalBuffer(JSON.parse(storedData)); } catch (e) { setLocalBuffer([]); }
         } else { setLocalBuffer([]); }
-        
+
         fetchDbSolves();
     }, [cubetype, session, isLoaded, fetchDbSolves]);
 
@@ -153,7 +148,7 @@ export default function Timer() {
         const sessionKey = `buffer_${session}_${cubetype}`;
         localStorage.setItem(sessionKey, JSON.stringify(localBuffer));
     }, [localBuffer, session, cubetype, isLoaded]);
-    
+
     // --- Export Logic ---
     const exportSolves = useCallback(async (solvesToExport) => {
         if (solvesToExport.length === 0) return;
@@ -161,16 +156,16 @@ export default function Timer() {
         try {
             const payload = solvesToExport.map(s => ({
                 scramble: s.scramble,
-                timeInSeconds: s.time / 1000, // Frontend uses MS, Backend expects Seconds
+                timeInSeconds: s.time / 1000,
                 type: s.type,
                 penalty: s.penalty,
                 comment: s.comment,
                 sessionNumber: Number(s.session)
             }));
-            
+
             await api.post('/solves/batch', { solves: payload });
             setLocalBuffer([]);
-            await fetchDbSolves(); // Refresh from DB
+            await fetchDbSolves();
         } catch (error) {
             console.error('Failed to export solves', error);
             alert('Failed to sync to server');
@@ -178,7 +173,7 @@ export default function Timer() {
             setIsSyncing(false);
         }
     }, [fetchDbSolves]);
-    
+
     // Auto-export on 25 solves
     useEffect(() => {
         if (localBuffer.length >= 25 && !isSyncing) {
@@ -205,7 +200,7 @@ export default function Timer() {
         const mean = nonDnfSolves.length > 0 ? sum / nonDnfSolves.length : 0;
         const variance = nonDnfSolves.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / nonDnfSolves.length;
         const stdDev = Math.sqrt(variance || 0);
-        
+
         let median = 0;
         if (nonDnfSolves.length > 0) {
             const sorted = [...nonDnfSolves].sort((a, b) => a - b);
@@ -214,18 +209,15 @@ export default function Timer() {
         }
 
         const calculatedAverages = {};
-
         BATCH_SIZES.forEach(size => {
             const currentAvg = calculateBatchAverage(solves.slice(-size), size);
-            
+
             let bestAvg = Infinity;
             if (solves.length >= size) {
                 for (let i = 0; i <= solves.length - size; i++) {
                     const window = solves.slice(i, i + size);
                     const avg = calculateBatchAverage(window, size);
-                    if (avg !== -1 && avg < bestAvg) {
-                        bestAvg = avg;
-                    }
+                    if (avg !== -1 && avg < bestAvg) bestAvg = avg;
                 }
             }
 
@@ -251,7 +243,7 @@ export default function Timer() {
             session: session
         };
         setLocalBuffer(prev => [...prev, newSolve]);
-        setPrevscramble(()=>scramble);
+        setPrevscramble(() => scramble);
         setScramble(generateScramble({ type: cubetype }));
     }, [cubetype, scramble, session]);
 
@@ -268,7 +260,7 @@ export default function Timer() {
 
     const startTimer = useCallback(() => {
         setTimerState('running');
-        setMobileView('timer'); 
+        setMobileView('timer');
         startTimeRef.current = Date.now();
         intervalRef.current = setInterval(() => {
             setTimeDisplay(Date.now() - startTimeRef.current);
@@ -283,7 +275,7 @@ export default function Timer() {
 
     const handleManualSubmit = (e) => {
         if (e.key === 'Enter') {
-            const rawVal = manualInput.replace(/[^0-9]/g, ''); 
+            const rawVal = manualInput.replace(/[^0-9]/g, '');
             if (!rawVal) return;
             const ms = parseInt(rawVal, 10) * 10;
             handleFinish(ms);
@@ -294,14 +286,14 @@ export default function Timer() {
     // --- Inputs Handling ---
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if(selectedSolveId || isTypingMode) return; 
+            if(selectedSolveId || isTypingMode) return;
 
             if (e.code === "Space") {
-                if(timerStateRef.current !== 'running') e.preventDefault(); 
+                if(timerStateRef.current !== 'running') e.preventDefault();
                 if (timerStateRef.current === 'running') stopTimer();
                 else if (timerStateRef.current === 'idle') readyTimer();
             }
-            
+
             const alpha = ['w','x','c','v','b','n','m','a','s','d','f','g','h','j','k','l'];
             if (alpha.includes(e.key.toLowerCase())) {
                 if (timerStateRef.current === 'running') stopTimer();
@@ -385,44 +377,101 @@ export default function Timer() {
     let cube = null;
     try {
         cube = applyScramble({ type: cubetype, scramble: scramble });
-    } catch (e) {
-        // console.error("Scramble invalid");
-    }
+    } catch (e) {}
+
     const dimUI = timerState === 'ready' || timerState === 'running' ? 'opacity-30 pointer-events-none' : '';
 
+    // Shared select style
+    const selectStyle = {
+        backgroundColor: '#1f1f1f',
+        color: '#ffffff',
+        border: '1px solid #4d4d4d',
+        borderRadius: '9999px',
+        padding: '6px 14px',
+        fontSize: '13px',
+        fontWeight: 700,
+        outline: 'none',
+        cursor: 'pointer',
+    };
+
     return (
-        <div className="bg-gradient-to-br from-background via-background to-surface/30 flex-1 flex flex-col min-h-full text-text-main font-sans relative overflow-hidden">
+        <div
+            className="flex-1 flex flex-col min-h-full relative overflow-hidden"
+            style={{ backgroundColor: '#121212', color: '#ffffff' }}
+        >
             <SEO title="Timer" description="Time your Rubik's Cube solves with millisecond precision, track Ao5 and Ao12, and analyze your stats." />
-            
+
             {/* --- DETAILS MODAL --- */}
             {selectedSolveId && selectedSolve && (
-                <div className="absolute inset-0 z-50 flex items-center justify-center bg-background/90 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-                    <div className="bg-surface border border-border p-6 rounded-lg w-full max-w-md shadow-2xl flex flex-col gap-4">
-                        <div className="flex justify-between items-center border-b border-border pb-2">
-                             <h2 className="text-4xl font-mono font-bold">
+                <div
+                    className="absolute inset-0 z-50 flex items-center justify-center p-4"
+                    style={{ backgroundColor: 'rgba(0,0,0,0.85)' }}
+                >
+                    <div
+                        className="w-full max-w-md rounded-lg p-6 flex flex-col gap-4"
+                        style={{ backgroundColor: '#1f1f1f', boxShadow: 'rgba(0,0,0,0.5) 0px 8px 24px' }}
+                    >
+                        <div className="flex justify-between items-center" style={{ borderBottom: '1px solid #282828', paddingBottom: '12px' }}>
+                            <h2 className="text-[36px] font-mono font-bold text-white">
                                 {formatTime(selectedSolve.time, selectedSolve.penalty)}
                             </h2>
-                            <button onClick={() => setSelectedSolveId(null)} className="p-2 hover:bg-surface-hover rounded text-text-main">✕</button>
+                            <button
+                                onClick={() => setSelectedSolveId(null)}
+                                className="p-2 rounded-full transition-colors text-[18px] leading-none"
+                                style={{ color: '#b3b3b3' }}
+                                onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.backgroundColor = '#252525'; }}
+                                onMouseLeave={e => { e.currentTarget.style.color = '#b3b3b3'; e.currentTarget.style.backgroundColor = 'transparent'; }}
+                            >
+                                ✕
+                            </button>
                         </div>
-                        <div className="text-text-muted font-mono text-sm bg-background p-2 rounded wrap-break-word border border-border">
+                        <div
+                            className="font-mono text-sm p-3 rounded-lg break-words"
+                            style={{ backgroundColor: '#121212', color: '#b3b3b3', border: '1px solid #282828' }}
+                        >
                             {selectedSolve.scramble}
                         </div>
                         <div className="flex justify-center gap-3">
-                            <button 
+                            <button
                                 onClick={() => handleUpdatePenalty(selectedSolve.id, selectedSolve.penalty === '+2' ? '' : '+2', selectedSolve.isDb)}
-                                className={`flex-1 py-3 rounded border text-lg font-bold transition-colors ${selectedSolve.penalty === '+2' ? 'bg-yellow-600 border-yellow-400 text-white' : 'border-border hover:bg-surface-hover text-text-muted'}`}
-                            >+2</button>
-                            <button 
+                                className="flex-1 py-3 rounded-full text-sm font-bold uppercase tracking-wider transition-colors"
+                                style={
+                                    selectedSolve.penalty === '+2'
+                                        ? { backgroundColor: '#ffa42b', color: '#000000', border: 'none' }
+                                        : { backgroundColor: 'transparent', color: '#b3b3b3', border: '1px solid #4d4d4d' }
+                                }
+                            >
+                                +2
+                            </button>
+                            <button
                                 onClick={() => handleUpdatePenalty(selectedSolve.id, selectedSolve.penalty === 'DNF' ? '' : 'DNF', selectedSolve.isDb)}
-                                className={`flex-1 py-3 rounded border text-lg font-bold transition-colors ${selectedSolve.penalty === 'DNF' ? 'bg-red-600 border-red-400 text-white' : 'border-border hover:bg-surface-hover text-text-muted'}`}
-                            >DNF</button>
-                            <button 
+                                className="flex-1 py-3 rounded-full text-sm font-bold uppercase tracking-wider transition-colors"
+                                style={
+                                    selectedSolve.penalty === 'DNF'
+                                        ? { backgroundColor: '#f3727f', color: '#ffffff', border: 'none' }
+                                        : { backgroundColor: 'transparent', color: '#b3b3b3', border: '1px solid #4d4d4d' }
+                                }
+                            >
+                                DNF
+                            </button>
+                            <button
                                 onClick={() => deleteSolveUI(selectedSolve.id, selectedSolve.isDb)}
-                                className="flex-1 py-3 rounded border border-red-500/50 text-red-400 hover:bg-red-500/20"
-                            >Del</button>
+                                className="flex-1 py-3 rounded-full text-sm font-bold uppercase tracking-wider transition-colors"
+                                style={{ backgroundColor: 'transparent', color: '#f3727f', border: '1px solid rgba(243,114,127,0.4)' }}
+                                onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(243,114,127,0.1)'}
+                                onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                            >
+                                Del
+                            </button>
                         </div>
-                        <textarea 
-                            className="w-full bg-surface border border-border rounded p-2 text-sm font-mono h-20 focus:border-primary outline-none transition-colors text-text-main"
+                        <textarea
+                            className="w-full rounded-lg p-3 text-sm font-mono h-20 outline-none transition-colors resize-none"
+                            style={{
+                                backgroundColor: '#121212',
+                                color: '#ffffff',
+                                border: '1px solid #282828',
+                                boxShadow: 'rgb(18,18,18) 0px 1px 0px, rgb(124,124,124) 0px 0px 0px 1px inset',
+                            }}
                             value={selectedSolve.comment || ""}
                             onChange={(e) => updateSolveLocally(selectedSolve.id, { comment: e.target.value })}
                             onBlur={(e) => {
@@ -437,98 +486,146 @@ export default function Timer() {
             )}
 
             {/* --- HEADER: Timer feature toolbar --- */}
-            <div className={`shrink-0 border-b border-border py-3 px-4 flex items-center justify-between bg-surface/80 backdrop-blur-sm transition-opacity duration-200 ${dimUI}`}>
+            <div
+                className={`shrink-0 py-3 px-4 flex items-center justify-between transition-opacity duration-200 ${dimUI}`}
+                style={{ borderBottom: '1px solid #282828', backgroundColor: '#181818' }}
+            >
                 <div className="flex items-center gap-3">
-                    <span className="text-text-muted text-sm font-medium hidden sm:inline">Event</span>
-                    <select 
-                        className="bg-background/60 border border-border px-4 py-2 rounded-lg text-text-main outline-none text-sm font-bold focus:border-primary transition-colors" 
-                        value={cubetype} 
-                        onChange={(e) => setCubetype(e.target.value)}
-                    >
+                    <span className="hidden sm:inline text-[12px] uppercase tracking-widest font-bold" style={{ color: '#b3b3b3' }}>
+                        Event
+                    </span>
+                    <select style={selectStyle} value={cubetype} onChange={(e) => setCubetype(e.target.value)}>
                         {['3x3','2x2','4x4','5x5','6x6','7x7'].map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
-                    <span className="text-text-muted text-sm font-medium hidden sm:inline">Session</span>
-                    <select 
-                        className="bg-background/60 border border-border px-4 py-2 rounded-lg text-text-main outline-none text-sm font-bold focus:border-primary transition-colors" 
-                        value={session} 
-                        onChange={(e) => setSession(e.target.value)}
-                    >
+                    <span className="hidden sm:inline text-[12px] uppercase tracking-widest font-bold" style={{ color: '#b3b3b3' }}>
+                        Session
+                    </span>
+                    <select style={selectStyle} value={session} onChange={(e) => setSession(e.target.value)}>
                         {Array.from({ length: 10 }, (_, i) => <option key={i + 1} value={i + 1}>Session {i + 1}</option>)}
                     </select>
                 </div>
                 <div className="flex items-center gap-2">
-                    <div className="relative flex items-center hidden sm:flex">
-                        {/* Max Time Filter Removed */}
-                    </div>
-                    <button 
+                    {/* Export button */}
+                    <button
                         onClick={() => exportSolves(localBuffer)}
                         disabled={localBuffer.length === 0 || isSyncing}
-                        className={`flex px-3 py-2 rounded-lg border text-sm font-bold transition-colors items-center gap-2 ${localBuffer.length > 0 ? 'bg-primary/20 border-primary/50 text-primary hover:bg-primary/30' : 'bg-background/30 border-border text-text-muted opacity-50 cursor-not-allowed'}`}
+                        className="flex px-4 py-2 rounded-full text-[12px] font-bold uppercase tracking-widest transition-colors items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                        style={
+                            localBuffer.length > 0
+                                ? { backgroundColor: 'rgba(30,215,96,0.1)', color: '#1ed760', border: '1px solid rgba(30,215,96,0.3)' }
+                                : { backgroundColor: 'transparent', color: '#b3b3b3', border: '1px solid #4d4d4d' }
+                        }
                     >
-                        {isSyncing ? <RefreshCw className="animate-spin" size={16}/> : <UploadCloud size={16}/>}
+                        {isSyncing ? <RefreshCw className="animate-spin" size={14}/> : <UploadCloud size={14}/>}
                         <span className="hidden sm:inline">Export</span> ({localBuffer.length})
                     </button>
-                    <button 
+
+                    {/* Mode toggle */}
+                    <button
                         onClick={() => setIsTypingMode(!isTypingMode)}
-                        className={`flex px-3 py-2 rounded-lg border text-sm font-bold transition-colors items-center gap-2 ${isTypingMode ? 'bg-green-600 border-green-400 text-white' : 'bg-background/60 border-border text-text-main hover:bg-surface-hover hover:border-primary/50'}`}
+                        className="flex px-4 py-2 rounded-full text-[12px] font-bold uppercase tracking-widest transition-colors items-center gap-2"
+                        style={
+                            isTypingMode
+                                ? { backgroundColor: '#1ed760', color: '#000000', border: 'none' }
+                                : { backgroundColor: 'transparent', color: '#b3b3b3', border: '1px solid #4d4d4d' }
+                        }
+                        onMouseEnter={e => {
+                            if (!isTypingMode) { e.currentTarget.style.backgroundColor = '#1f1f1f'; e.currentTarget.style.color = '#ffffff'; }
+                            else e.currentTarget.style.backgroundColor = '#1db954';
+                        }}
+                        onMouseLeave={e => {
+                            if (!isTypingMode) { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#b3b3b3'; }
+                            else e.currentTarget.style.backgroundColor = '#1ed760';
+                        }}
                     >
-                        {isTypingMode ? <><span className="text-base leading-none">⌨️</span><span className="hidden sm:inline"> Manual input</span></> : <><span className="text-base leading-none">⏱</span><span className="hidden sm:inline"> Timer</span></>}
+                        {isTypingMode ? <><span>⌨️</span><span className="hidden sm:inline">Manual input</span></> : <><span>⏱</span><span className="hidden sm:inline">Timer</span></>}
                     </button>
                 </div>
             </div>
 
             {/* --- SCRAMBLE --- */}
-            <div className={`shrink-0 py-4 px-4 leading-relaxed flex flex-col items-center justify-center border-b border-border/50 bg-surface/30 transition-opacity duration-200 ${dimUI}`}>
-                <p className="text-text-muted text-xs uppercase tracking-widest mb-2 font-medium">Scramble</p>
-                <div className='flex flex-col items-center w-full'> 
-                    <div className='font-mono mx-2 text-lg sm:text-xl md:text-2xl lg:text-3xl min-h-14 text-center w-full text-text-main'>
-                        {isLoaded ? scramble : "Loading..."} 
+            <div
+                className={`shrink-0 py-4 px-4 flex flex-col items-center justify-center transition-opacity duration-200 ${dimUI}`}
+                style={{ borderBottom: '1px solid #282828', backgroundColor: '#181818' }}
+            >
+                <p className="text-[11px] uppercase tracking-widest mb-2 font-bold" style={{ color: '#b3b3b3' }}>Scramble</p>
+                <div className="flex flex-col items-center w-full">
+                    <div className="font-mono mx-2 text-lg sm:text-xl md:text-2xl lg:text-3xl min-h-14 text-center w-full text-white">
+                        {isLoaded ? scramble : "Loading..."}
                     </div>
-                    <div className="flex gap-6 mt-3 opacity-60 hover:opacity-100 transition-opacity">
-                        <button className='text-xs uppercase tracking-widest text-text-muted hover:text-primary hover:underline' onClick={()=>{
-                            if (prevscramble.length > 0){
-                                setScramble(() => prevscramble)
-                                setPrevscramble(() => "")
-                            }
-                        }}>Prev</button>
-                        <button className='text-xs uppercase tracking-widest text-text-muted hover:text-primary hover:underline' onClick={()=>{
-                            setPrevscramble(() => scramble)
-                            setScramble(generateScramble({ type: cubetype }))
-                        }}>Next</button>
+                    <div className="flex gap-6 mt-3 opacity-50 hover:opacity-100 transition-opacity">
+                        <button
+                            className="text-[11px] uppercase tracking-widest font-bold transition-colors"
+                            style={{ color: '#b3b3b3' }}
+                            onMouseEnter={e => e.currentTarget.style.color = '#1ed760'}
+                            onMouseLeave={e => e.currentTarget.style.color = '#b3b3b3'}
+                            onClick={() => {
+                                if (prevscramble.length > 0) {
+                                    setScramble(() => prevscramble);
+                                    setPrevscramble(() => "");
+                                }
+                            }}
+                        >
+                            Prev
+                        </button>
+                        <button
+                            className="text-[11px] uppercase tracking-widest font-bold transition-colors"
+                            style={{ color: '#b3b3b3' }}
+                            onMouseEnter={e => e.currentTarget.style.color = '#1ed760'}
+                            onMouseLeave={e => e.currentTarget.style.color = '#b3b3b3'}
+                            onClick={() => {
+                                setPrevscramble(() => scramble);
+                                setScramble(generateScramble({ type: cubetype }));
+                            }}
+                        >
+                            Next
+                        </button>
                     </div>
                 </div>
             </div>
 
             {/* --- MAIN AREA --- */}
-            <div className="flex-1 flex flex-col md:flex-row min-h-0 border-t border-border relative">
-                
-                {/* LIST */}
-                <div className={`
-                    bg-surface/60 md:bg-surface/80 md:basis-1/6 md:border-r border-border flex flex-col
-                    ${mobileView === 'solves' ? 'flex h-full absolute inset-0 z-20 md:static' : 'hidden md:flex'}
-                    ${dimUI}
-                `}>
-                    <div className="py-4 px-3 text-center border-b border-border">
-                        <h2 className="text-sm uppercase tracking-widest text-text-muted font-bold">Solves</h2>
-                        <p className="text-2xl font-mono font-bold text-text-main mt-0.5">{solves.length}</p>
+            <div
+                className="flex-1 flex flex-col md:flex-row min-h-0"
+                style={{ borderTop: '1px solid #282828' }}
+            >
+                {/* SOLVES LIST */}
+                <div
+                    className={`
+                        md:basis-1/6 flex flex-col
+                        ${mobileView === 'solves' ? 'flex h-full absolute inset-0 z-20 md:static' : 'hidden md:flex'}
+                        ${dimUI}
+                    `}
+                    style={{ backgroundColor: '#181818', borderRight: '1px solid #282828' }}
+                >
+                    <div className="py-4 px-3 text-center" style={{ borderBottom: '1px solid #282828' }}>
+                        <h2 className="text-[11px] uppercase tracking-widest font-bold" style={{ color: '#b3b3b3' }}>Solves</h2>
+                        <p className="text-[22px] font-mono font-bold text-white mt-0.5">{solves.length}</p>
                     </div>
-                    <div className="flex-1 overflow-y-auto p-2 scrollbar-thin">
-                         <div className="flex flex-col-reverse gap-1">
+                    <div className="flex-1 overflow-y-auto p-2">
+                        <div className="flex flex-col-reverse gap-0.5">
                             {solves.map((s, i) => (
-                                <div 
-                                    key={s.id} 
+                                <div
+                                    key={s.id}
                                     onClick={() => setSelectedSolveId(s.id)}
-                                    className={`flex justify-between items-center px-3 py-2.5 md:py-2 rounded-lg cursor-pointer transition-colors ${s.penalty === 'DNF' ? 'text-red-400 border-l-2 border-red-500 bg-red-500/10' : 'hover:bg-surface-hover text-text-main bg-background/30'}`}
+                                    className="flex justify-between items-center px-3 py-2 rounded-lg cursor-pointer transition-colors"
+                                    style={
+                                        s.penalty === 'DNF'
+                                            ? { color: '#f3727f', borderLeft: '2px solid #f3727f', backgroundColor: 'rgba(243,114,127,0.05)' }
+                                            : { color: '#ffffff', backgroundColor: 'transparent' }
+                                    }
+                                    onMouseEnter={e => { if (s.penalty !== 'DNF') e.currentTarget.style.backgroundColor = '#1f1f1f'; }}
+                                    onMouseLeave={e => { if (s.penalty !== 'DNF') e.currentTarget.style.backgroundColor = 'transparent'; }}
                                 >
-                                    <span className="text-text-muted w-7 text-sm font-medium">{i + 1}.</span>
-                                    <span className="font-mono font-bold text-base md:text-sm">{formatTime(s.time, s.penalty)}</span>
+                                    <span className="text-sm font-medium" style={{ color: '#b3b3b3' }}>{i + 1}.</span>
+                                    <span className="font-mono font-bold text-sm">{formatTime(s.time, s.penalty)}</span>
                                 </div>
                             ))}
                         </div>
                     </div>
                 </div>
 
-                {/* TIMER / INPUT — main feature area */}
+                {/* TIMER / INPUT */}
                 <div
                     className={`
                         md:basis-4/6 flex flex-col justify-center items-center relative overflow-hidden select-none
@@ -537,12 +634,14 @@ export default function Timer() {
                     onPointerDown={handlePointerDown}
                     onPointerUp={handlePointerUp}
                     onPointerCancel={handlePointerUp}
-                    style={{ touchAction: 'none' }}
+                    style={{ touchAction: 'none', backgroundColor: '#121212' }}
                 >
-                    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center py-8 md:py-12 px-6 rounded-2xl bg-surface/40 border border-border/50 shadow-xl backdrop-blur-sm">
+                    <div className="w-full max-w-2xl mx-auto flex flex-col items-center justify-center py-8 md:py-12 px-6">
                         {isTypingMode ? (
                             <>
-                                <p className="text-text-muted text-sm uppercase tracking-widest mb-4">Manual time (centiseconds)</p>
+                                <p className="text-[11px] text-uppercase tracking-widest mb-4 font-bold uppercase" style={{ color: '#b3b3b3' }}>
+                                    Manual time (centiseconds)
+                                </p>
                                 <input
                                     ref={inputRef}
                                     type="number"
@@ -551,29 +650,33 @@ export default function Timer() {
                                     onChange={(e) => setManualInput(e.target.value)}
                                     onKeyDown={handleManualSubmit}
                                     placeholder="0"
-                                    className="bg-background/50 border border-border rounded-xl text-center text-6xl md:text-8xl font-mono text-text-main outline-none w-full py-4 focus:border-primary transition-colors"
+                                    className="text-center text-[72px] md:text-[100px] font-mono font-bold text-white outline-none w-full py-4 rounded-lg transition-colors"
+                                    style={{
+                                        backgroundColor: '#1f1f1f',
+                                        boxShadow: 'rgb(18,18,18) 0px 1px 0px, rgb(124,124,124) 0px 0px 0px 1px inset',
+                                    }}
                                 />
-                                <p className="text-text-muted text-xs mt-3">Enter time and press Enter</p>
+                                <p className="text-[12px] mt-3" style={{ color: '#b3b3b3' }}>Enter time and press Enter</p>
                             </>
                         ) : (
                             <>
-                                <p className="text-text-muted text-xs uppercase tracking-widest mb-2 font-medium">
+                                <p className="text-[11px] uppercase tracking-widest mb-2 font-bold" style={{ color: '#b3b3b3' }}>
                                     {timerState === 'idle' && 'Hold space or tap to start'}
                                     {timerState === 'ready' && 'Release to start'}
                                     {timerState === 'running' && 'Press space or tap to stop'}
                                 </p>
-                                <div className={`
-                                    font-mono font-bold tabular-nums transition-colors duration-100
-                                    text-[20vw] sm:text-[18vw] md:text-[140px] lg:text-[160px] leading-none
-                                    ${timerState === 'ready' ? 'text-green-500' : 'text-text-main'}
-                                    ${timerState === 'running' ? 'text-primary' : ''}
-                                    drop-shadow-lg
-                                `}>
+                                <div
+                                    className="font-mono font-bold tabular-nums transition-colors duration-100 leading-none"
+                                    style={{
+                                        fontSize: 'clamp(72px, 20vw, 160px)',
+                                        color: timerState === 'ready' ? '#1ed760' : '#ffffff',
+                                    }}
+                                >
                                     {formatTime(timeDisplay)}
                                 </div>
-                                <div className="text-text-muted font-mono text-base md:text-lg flex gap-8 mt-6">
-                                    <span><span className="text-text-muted/80">Ao5</span> {formatTime(stats.averages[5].current)}</span>
-                                    <span><span className="text-text-muted/80">Ao12</span> {formatTime(stats.averages[12].current)}</span>
+                                <div className="font-mono text-base md:text-lg flex gap-8 mt-6" style={{ color: '#b3b3b3' }}>
+                                    <span><span style={{ color: '#b3b3b3', opacity: 0.7 }}>Ao5</span> {formatTime(stats.averages[5].current)}</span>
+                                    <span><span style={{ color: '#b3b3b3', opacity: 0.7 }}>Ao12</span> {formatTime(stats.averages[12].current)}</span>
                                 </div>
                             </>
                         )}
@@ -581,68 +684,72 @@ export default function Timer() {
                 </div>
 
                 {/* STATS */}
-                <div className={`
-                    bg-surface/60 md:bg-surface/80 md:basis-1/6 md:border-l border-border 
-                    overflow-y-auto p-4 text-sm font-mono
-                    ${mobileView === 'stats' ? 'block h-full absolute inset-0 z-20 md:static' : 'hidden md:block'}
-                    ${dimUI}
-                `}>
-                    <div className="text-center mb-4 border-b border-border pb-3">
-                        <h2 className="text-sm uppercase tracking-widest text-text-muted font-bold">Session Stats</h2>
+                <div
+                    className={`
+                        md:basis-1/6 overflow-y-auto p-4 text-sm font-mono
+                        ${mobileView === 'stats' ? 'block h-full absolute inset-0 z-20 md:static' : 'hidden md:block'}
+                        ${dimUI}
+                    `}
+                    style={{ backgroundColor: '#181818', borderLeft: '1px solid #282828' }}
+                >
+                    <div className="text-center mb-4 pb-3" style={{ borderBottom: '1px solid #282828' }}>
+                        <h2 className="text-[11px] uppercase tracking-widest font-bold" style={{ color: '#b3b3b3' }}>Session Stats</h2>
                     </div>
-                    
+
                     {/* General Stats */}
                     <div className="grid grid-cols-2 gap-x-2 gap-y-1 mb-4">
-                        <span className="text-text-muted">Solves</span>
-                        <span className="font-bold text-right">{solves.length}</span>
+                        <span style={{ color: '#b3b3b3' }}>Solves</span>
+                        <span className="font-bold text-right text-white">{solves.length}</span>
                         {showMeanMedian && (
                             <>
-                                <span className="text-text-muted">Mean</span>
-                                <span className="font-bold text-right">{formatTime(stats.mean)}</span>
-                                <span className="text-text-muted">Median</span>
-                                <span className="font-bold text-right">{formatTime(stats.median)}</span>
+                                <span style={{ color: '#b3b3b3' }}>Mean</span>
+                                <span className="font-bold text-right text-white">{formatTime(stats.mean)}</span>
+                                <span style={{ color: '#b3b3b3' }}>Median</span>
+                                <span className="font-bold text-right text-white">{formatTime(stats.median)}</span>
                             </>
                         )}
-                        <span className="text-text-muted">Best</span>
-                        <span className="font-bold text-right">{formatTime(stats.best)}</span>
-                        <span className="text-text-muted">Std Dev</span>
-                        <span className="font-bold text-right">{formatTime(stats.stdDev)}</span>
+                        <span style={{ color: '#b3b3b3' }}>Best</span>
+                        <span className="font-bold text-right text-white">{formatTime(stats.best)}</span>
+                        <span style={{ color: '#b3b3b3' }}>Std Dev</span>
+                        <span className="font-bold text-right text-white">{formatTime(stats.stdDev)}</span>
                     </div>
 
                     <div className="flex justify-center mb-4">
-                        <button 
+                        <button
                             onClick={() => setShowMeanMedian(!showMeanMedian)}
-                            className="text-xs uppercase tracking-widest text-text-muted hover:text-primary hover:underline transition-colors"
+                            className="text-[11px] uppercase tracking-widest font-bold transition-colors"
+                            style={{ color: '#b3b3b3' }}
+                            onMouseEnter={e => e.currentTarget.style.color = '#1ed760'}
+                            onMouseLeave={e => e.currentTarget.style.color = '#b3b3b3'}
                         >
                             {showMeanMedian ? 'Hide' : 'Show'} Mean/Median
                         </button>
                     </div>
 
-                    <div className="border-t border-border my-4"></div>
+                    <div className="my-4" style={{ borderTop: '1px solid #282828' }} />
 
                     {/* Averages Grid */}
-                    <div className="grid grid-cols-[1fr_1fr_1fr] gap-y-2 gap-x-2 items-center text-xs md:text-xs">
-                        <div className="text-text-muted uppercase tracking-wider font-bold">Type</div>
-                        <div className="text-text-muted uppercase tracking-wider font-bold text-right">Cur</div>
-                        <div className="text-yellow-600 uppercase tracking-wider font-bold text-right">Best</div>
+                    <div className="grid grid-cols-[1fr_1fr_1fr] gap-y-2 gap-x-2 items-center text-xs">
+                        <div className="text-[10px] uppercase tracking-wider font-bold" style={{ color: '#b3b3b3' }}>Type</div>
+                        <div className="text-[10px] uppercase tracking-wider font-bold text-right" style={{ color: '#b3b3b3' }}>Cur</div>
+                        <div className="text-[10px] uppercase tracking-wider font-bold text-right" style={{ color: '#ffa42b' }}>Best</div>
 
                         {BATCH_SIZES.map(size => {
                             const data = stats.averages[size];
                             if (!data) return null;
-
                             return (
                                 <Fragment key={size}>
-                                    <div className="font-bold text-text-main/80">Ao{size}</div>
-                                    <div className="text-right font-mono">{formatTime(data.current)}</div>
-                                    <div className="text-right font-mono text-yellow-500">{formatTime(data.best)}</div>
+                                    <div className="font-bold" style={{ color: '#b3b3b3' }}>Ao{size}</div>
+                                    <div className="text-right font-mono text-white">{formatTime(data.current)}</div>
+                                    <div className="text-right font-mono" style={{ color: '#ffa42b' }}>{formatTime(data.best)}</div>
                                 </Fragment>
-                            )
+                            );
                         })}
                     </div>
-                    
-                    <div className="mt-8 text-center flex flex-col gap-2">
-                        <button 
-                            onClick={async () => { 
+
+                    <div className="mt-6 text-center flex flex-col gap-2">
+                        <button
+                            onClick={async () => {
                                 if(confirm("Clear this entire session including DB records?")) {
                                     try {
                                         setIsSyncing(true);
@@ -653,20 +760,35 @@ export default function Timer() {
                                     finally { setIsSyncing(false); }
                                 }
                             }}
-                            className="w-full bg-red-500/20 hover:bg-red-600 border border-red-500/50 text-red-200 px-4 py-2 rounded text-xs uppercase tracking-widest transition"
-                        >Reset Full Session</button>
-                        
-                        <button 
+                            className="w-full px-4 py-2 rounded-full text-[11px] uppercase tracking-widest font-bold transition-colors"
+                            style={{ backgroundColor: 'rgba(243,114,127,0.1)', color: '#f3727f', border: '1px solid rgba(243,114,127,0.3)' }}
+                            onMouseEnter={e => e.currentTarget.style.backgroundColor = 'rgba(243,114,127,0.2)'}
+                            onMouseLeave={e => e.currentTarget.style.backgroundColor = 'rgba(243,114,127,0.1)'}
+                        >
+                            Reset Full Session
+                        </button>
+
+                        <button
                             onClick={() => { if(confirm("Clear un-exported local solves?")) setLocalBuffer([]); }}
-                            className="w-full bg-surface-hover hover:bg-border border border-border text-text-muted px-4 py-2 rounded text-xs uppercase tracking-widest transition"
-                        >Clear Local Buffer</button>
+                            className="w-full px-4 py-2 rounded-full text-[11px] uppercase tracking-widest font-bold transition-colors"
+                            style={{ backgroundColor: 'transparent', color: '#b3b3b3', border: '1px solid #4d4d4d' }}
+                            onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#1f1f1f'; e.currentTarget.style.color = '#ffffff'; }}
+                            onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#b3b3b3'; }}
+                        >
+                            Clear Local Buffer
+                        </button>
                     </div>
 
-                    <div className='my-8 bg-surface border border-border rounded p-2'>
-                        <button 
-                            className='text-text-muted hover:text-text-main text-center w-full text-xs cursor-pointer md:block hidden' 
-                            onClick={()=>{ setCheckState((prev)=> !prev) }}
-                        >{checkState ? "Hide Cube" : "Show Cube"}</button>
+                    <div className="my-6 rounded-lg p-2" style={{ backgroundColor: '#1f1f1f', border: '1px solid #282828' }}>
+                        <button
+                            className="text-center w-full text-[11px] cursor-pointer md:block hidden uppercase tracking-widest font-bold transition-colors"
+                            style={{ color: '#b3b3b3' }}
+                            onMouseEnter={e => e.currentTarget.style.color = '#1ed760'}
+                            onMouseLeave={e => e.currentTarget.style.color = '#b3b3b3'}
+                            onClick={() => { setCheckState((prev) => !prev); }}
+                        >
+                            {checkState ? "Hide Cube" : "Show Cube"}
+                        </button>
                         <div className={`mt-2 flex justify-center ${!checkState ? 'md:hidden block' : ''}`}>
                             {cube && <Cube2D cube={cube} size={15} />}
                         </div>
@@ -675,28 +797,45 @@ export default function Timer() {
             </div>
 
             {/* MOBILE NAV */}
-            <div className={`md:hidden flex shrink-0 bg-surface/90 backdrop-blur-sm border-t border-border pb-safe ${timerState === 'running' ? 'hidden' : ''}`}>
+            <div
+                className={`md:hidden flex shrink-0 ${timerState === 'running' ? 'hidden' : ''}`}
+                style={{ backgroundColor: '#181818', borderTop: '1px solid #282828' }}
+            >
                 <NavButton active={mobileView === 'solves'} onClick={() => setMobileView('solves')} label="Solves" count={solves.length} />
                 <NavButton active={mobileView === 'timer'} onClick={() => setMobileView('timer')} label={isTypingMode ? "Input" : "Timer"} icon={true} />
                 <NavButton active={mobileView === 'stats'} onClick={() => setMobileView('stats')} label="Stats" />
             </div>
         </div>
-    )
+    );
 }
 
 function NavButton({ active, onClick, label, icon, count }) {
     return (
-        <button 
+        <button
             onClick={onClick}
-            className={`flex-1 py-4 flex flex-col items-center justify-center relative transition-colors ${active ? 'bg-surface-hover text-text-main' : 'text-text-muted hover:bg-surface-hover'}`}
+            className="flex-1 py-4 flex flex-col items-center justify-center relative transition-colors"
+            style={{
+                backgroundColor: active ? '#1f1f1f' : 'transparent',
+                color: active ? '#ffffff' : '#b3b3b3',
+            }}
         >
             {icon ? (
                 <div className="mb-1 text-2xl">{label === 'Input' ? '⌨️' : '⏱'}</div>
             ) : (
-                <span className="text-lg font-bold mb-0.5">{label}</span>
+                <span className="text-sm font-bold mb-0.5">{label}</span>
             )}
-            {count !== undefined && <span className="text-[10px] bg-background px-1.5 rounded-full absolute top-2 right-8 md:right-auto">{count}</span>}
-            <div className={`h-1 w-1 rounded-full ${active ? 'bg-primary' : 'bg-transparent'}`} />
+            {count !== undefined && (
+                <span
+                    className="text-[10px] px-1.5 rounded-full absolute top-2 right-8 md:right-auto"
+                    style={{ backgroundColor: '#121212', color: '#b3b3b3' }}
+                >
+                    {count}
+                </span>
+            )}
+            <div
+                className="h-1 w-1 rounded-full mt-0.5"
+                style={{ backgroundColor: active ? '#1ed760' : 'transparent' }}
+            />
         </button>
-    )
+    );
 }

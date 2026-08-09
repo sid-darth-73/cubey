@@ -1,20 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300..700&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-mont: Montserrat, sans-serif;
-  --font-quick: Quicksand, sans-serif;
+  --font-system: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica Neue, helvetica, arial, sans-serif;
 
   --color-background: var(--background);
   --color-surface: var(--surface);
   --color-surface-hover: var(--surface-hover);
-  
+
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
-  
+
   --color-secondary: var(--secondary);
-  
+
   --color-text-main: var(--text-main);
   --color-text-muted: var(--text-muted);
 
@@ -22,56 +19,129 @@
 }
 
 :root {
-  /* Dark Mode (Default) */
-  --background: #0f172a; /* slate-900 */
-  --surface: #1e293b; /* slate-800 */
-  --surface-hover: #334155; /* slate-700 */
-  
-  --primary: #3b82f6; /* blue-500 */
-  --primary-hover: #2563eb; /* blue-600 */
-  
-  --secondary: #64748b; /* slate-500 */
-  
-  --text-main: #f8fafc; /* slate-50 */
-  --text-muted: #94a3b8; /* slate-400 */
+  /* Immersive Dark Theme — always dark, no light mode */
+  --background: #121212;
+  --surface: #181818;
+  --surface-hover: #1f1f1f;
 
-  --border: #334155; /* slate-700 */
+  /* Brand Accent Green — functional only, never decorative */
+  --primary: #1ed760;
+  --primary-hover: #1db954;
+
+  --secondary: #252525;
+
+  --text-main: #ffffff;
+  --text-muted: #b3b3b3;
+
+  --border: #4d4d4d;
+
+  /* Semantic */
+  --text-negative: #f3727f;
+  --text-warning: #ffa42b;
+  --text-announcement: #539df5;
+
+  /* Shadows */
+  --shadow-heavy: rgba(0,0,0,0.5) 0px 8px 24px;
+  --shadow-medium: rgba(0,0,0,0.3) 0px 8px 8px;
+  --shadow-inset-border: rgb(18,18,18) 0px 1px 0px, rgb(124,124,124) 0px 0px 0px 1px inset;
 }
-
-/* Light Mode */
-.light {
-  --background: #f8fafc; /* slate-50 */
-  --surface: #ffffff; /* white */
-  --surface-hover: #e2e8f0; /* slate-200 */
-  
-  --primary: #2563eb; /* blue-600 */
-  --primary-hover: #1d4ed8; /* blue-700 */
-  
-  --secondary: #94a3b8; /* slate-400 */
-  
-  --text-main: #0f172a; /* slate-900 */
-  --text-muted: #64748b; /* slate-500 */
-
-  --border: #e2e8f0; /* slate-200 */
-}
-
 
 @layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    background-color: #121212;
+    color: #ffffff;
+  }
+
   body {
-    @apply bg-background text-text-main font-quick antialiased transition-colors duration-300;
+    background-color: var(--background);
+    color: var(--text-main);
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica Neue, helvetica, arial, sans-serif;
+    font-size: 16px;
+    line-height: normal;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-mont font-bold;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica Neue, helvetica, arial, sans-serif;
+    font-weight: 700;
+    color: var(--text-main);
+  }
+
+  /* Custom scrollbar — dark themed */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--background);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #4d4d4d;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #7c7c7c;
+  }
+
+  /* Select element dark styling */
+  select {
+    background-color: var(--surface-hover);
+    color: var(--text-main);
+    border: none;
+    cursor: pointer;
+  }
+
+  select option {
+    background-color: #1f1f1f;
+    color: #ffffff;
   }
 }
 
 @layer utilities {
-  .glass-panel {
-    @apply bg-surface/80 backdrop-blur-md border border-border/50 shadow-xl;
+  /* Dark card surface */
+  .dark-card {
+    background-color: #181818;
+    border-radius: 8px;
+    box-shadow: rgba(0,0,0,0.3) 0px 8px 8px;
   }
-  
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500;
+
+  /* Elevated dialog / menu */
+  .dark-elevated {
+    background-color: #1f1f1f;
+    border-radius: 8px;
+    box-shadow: rgba(0,0,0,0.5) 0px 8px 24px;
+  }
+
+  /* Inset border on inputs */
+  .input-inset {
+    box-shadow: rgb(18,18,18) 0px 1px 0px, rgb(124,124,124) 0px 0px 0px 1px inset;
+  }
+
+  /* Pill button full */
+  .pill {
+    border-radius: 9999px;
+  }
+
+  /* Large pill */
+  .pill-lg {
+    border-radius: 500px;
+  }
+
+  /* Accent green text */
+  .text-accent {
+    color: #1ed760;
+  }
+
+  /* Uppercase label style — for button text */
+  .label-uppercase {
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    font-size: 14px;
+    font-weight: 700;
   }
 }

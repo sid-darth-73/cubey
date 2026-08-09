@@ -2,12 +2,23 @@ import { useEffect, useState, useRef } from "react";
 import axios from "../../utils/api";
 import { Input } from "../../components/ui/Input";
 import { Badge } from "../../components/ui/Badge";
-import { Button } from "../../components/ui/Button";
-import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/Card";
 import { Trash2, Plus, Upload, ChevronDown, Calculator } from 'lucide-react';
 import Papa from 'papaparse';
 
 const eventOptions = ['2x2', '3x3', '4x4', '5x5', 'OH', 'Pyraminx', 'Skewb', 'BLD', 'Other'];
+
+const dropdownStyle = {
+  position: 'absolute',
+  top: 'calc(100% + 8px)',
+  left: 0,
+  width: '130px',
+  zIndex: 50,
+  backgroundColor: '#1f1f1f',
+  borderRadius: '8px',
+  overflow: 'hidden',
+  boxShadow: 'rgba(0,0,0,0.5) 0px 8px 24px',
+  border: '1px solid #282828',
+};
 
 export default function Averages() {
   const [averages, setAverages] = useState([]);
@@ -28,15 +39,11 @@ export default function Averages() {
     }
   };
 
-  useEffect(() => {
-    fetchAverages();
-  }, []);
+  useEffect(() => { fetchAverages(); }, []);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setDropdownOpen(false);
-      }
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) setDropdownOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -45,10 +52,7 @@ export default function Averages() {
   const handleAddAverage = async () => {
     try {
       setLoading(true);
-      await axios.post('/averages', {
-        timeInSeconds: Number(time),
-        type
-      });
+      await axios.post('/averages', { timeInSeconds: Number(time), type });
       setTime('');
       setType('3x3');
       fetchAverages();
@@ -59,7 +63,7 @@ export default function Averages() {
     }
   };
 
-  const handleDeleteAverage = async (id)=>{
+  const handleDeleteAverage = async (id) => {
     try {
       await axios.delete(`/averages/${id}`);
       setAverages((prev) => prev.filter((average) => average._id !== id));
@@ -82,139 +86,157 @@ export default function Averages() {
           const { time, type } = row;
           if (!time || !type) {
             setImportError("CSV must have 'time' and 'type' columns.");
-            hasError = true;
-            break;
+            hasError = true; break;
           }
           try {
-            await axios.post('/averages', {
-              timeInSeconds: Number(time),
-              type,
-            });
+            await axios.post('/averages', { timeInSeconds: Number(time), type });
           } catch (err) {
             setImportError("Failed to import some averages. Please check your CSV.");
-            hasError = true;
-            break;
+            hasError = true; break;
           }
         }
-        if(!hasError) {
-          fetchAverages();
-        }
+        if(!hasError) fetchAverages();
       },
       error: () => setImportError("Failed to parse CSV file."),
     });
   };
 
-    return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <Card>
-        <CardHeader>
-          <CardTitle>Add Average (ao5)</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col lg:flex-row gap-6 items-start">
-            
-            <div className="flex-grow w-full space-y-4">
-              <Input 
-                type="number" 
-                value={time} 
-                onChange={(e) => setTime(e.target.value)} 
-                placeholder="Time in seconds"
-                label="Average Time"
-              />
+  return (
+    <div className="space-y-6">
 
-              <div className="flex gap-4">
-                <div className="relative" ref={dropdownRef}>
-                  <Button 
-                    variant="secondary" 
-                    className="w-32 justify-between"
-                    onClick={() => setDropdownOpen(!dropdownOpen)}
-                  >
-                    {type}
-                    <ChevronDown size={14} />
-                  </Button>
+      {/* Add Average Card */}
+      <div
+        className="rounded-lg p-6"
+        style={{ backgroundColor: '#181818', boxShadow: 'rgba(0,0,0,0.3) 0px 8px 8px' }}
+      >
+        <h2 className="text-[18px] font-semibold text-white mb-5">Add Average (ao5)</h2>
 
-                  {dropdownOpen && (
-                    <div className="absolute top-full mt-2 w-32 z-50 bg-surface border border-border rounded-lg shadow-xl max-h-60 overflow-y-auto">
-                      {eventOptions.map((ev) => (
-                        <button
-                          key={ev}
-                          onClick={() => { setType(ev); setDropdownOpen(false); }}
-                          className="w-full text-left px-4 py-2 text-sm hover:bg-surface-hover text-text-main transition-colors"
-                        >
-                          {ev}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
+          <div className="flex-grow w-full space-y-4">
+            <Input
+              type="number"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              placeholder="Time in seconds"
+              label="Average Time"
+            />
 
-                <Button onClick={handleAddAverage} loading={loading}>
-                  <Plus size={18} className="mr-2" />
-                  Add Average
-                </Button>
+            <div className="flex gap-3">
+              {/* Event dropdown */}
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-bold transition-colors"
+                  style={{ border: '1px solid #4d4d4d', color: '#b3b3b3', backgroundColor: 'transparent' }}
+                  onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#1f1f1f'; e.currentTarget.style.color = '#ffffff'; }}
+                  onMouseLeave={e => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#b3b3b3'; }}
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                >
+                  {type}
+                  <ChevronDown size={13} />
+                </button>
+
+                {dropdownOpen && (
+                  <div style={dropdownStyle}>
+                    {eventOptions.map((ev) => (
+                      <button
+                        key={ev}
+                        onClick={() => { setType(ev); setDropdownOpen(false); }}
+                        className="w-full text-left px-4 py-2 text-sm transition-colors"
+                        style={{ color: '#ffffff' }}
+                        onMouseEnter={e => e.currentTarget.style.backgroundColor = '#252525'}
+                        onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                      >
+                        {ev}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
-            </div>
 
-            {/* CSV Import */}
-            <div className="w-full lg:w-auto p-4 rounded-lg bg-surface-hover/30 border border-white/5 flex flex-col items-center justify-center text-center">
-               <label className="cursor-pointer group flex flex-col items-center gap-2">
-                <div className="p-3 rounded-full bg-primary/10 text-primary group-hover:bg-primary/20 transition-colors">
-                  <Upload size={20} />
-                </div>
-                <span className="text-sm font-medium text-text-muted group-hover:text-text-main transition-colors">Import CSV</span>
-                <input
-                  type="file"
-                  accept=".csv"
-                  ref={fileInputRef}
-                  onChange={handleImportCSV}
-                  className="hidden"
-                />
-              </label>
-              {importError && <div className="text-red-400 text-xs mt-2 max-w-[150px]">{importError}</div>}
-              <p className="text-[10px] text-text-muted mt-2">Format: time,type</p>
+              {/* Add button */}
+              <button
+                onClick={handleAddAverage}
+                disabled={loading}
+                className="flex items-center gap-2 px-6 py-2 rounded-full text-[13px] font-bold uppercase tracking-[1.4px] transition-all duration-200 active:scale-95 disabled:opacity-50"
+                style={{ backgroundColor: '#1ed760', color: '#000000' }}
+                onMouseEnter={e => { if (!loading) e.currentTarget.style.backgroundColor = '#1db954'; }}
+                onMouseLeave={e => { if (!loading) e.currentTarget.style.backgroundColor = '#1ed760'; }}
+              >
+                {loading
+                  ? <span className="h-4 w-4 rounded-full border-2 border-black border-t-transparent animate-spin" />
+                  : <Plus size={16} />
+                }
+                Add Average
+              </button>
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      <div className="space-y-4">
-        <h3 className="text-xl font-bold font-mont px-1">Recorded Averages</h3>
+          {/* CSV Import */}
+          <div
+            className="w-full lg:w-auto p-4 rounded-lg flex flex-col items-center justify-center text-center"
+            style={{ backgroundColor: '#1f1f1f' }}
+          >
+            <label className="cursor-pointer group flex flex-col items-center gap-2">
+              <div
+                className="p-3 rounded-full transition-colors"
+                style={{ backgroundColor: '#252525', color: '#b3b3b3' }}
+                onMouseEnter={e => { e.currentTarget.style.backgroundColor = '#1ed760'; e.currentTarget.style.color = '#000000'; }}
+                onMouseLeave={e => { e.currentTarget.style.backgroundColor = '#252525'; e.currentTarget.style.color = '#b3b3b3'; }}
+              >
+                <Upload size={18} />
+              </div>
+              <span className="text-sm font-bold" style={{ color: '#b3b3b3' }}>Import CSV</span>
+              <input type="file" accept=".csv" ref={fileInputRef} onChange={handleImportCSV} className="hidden" />
+            </label>
+            {importError && <div className="text-xs mt-2 max-w-[150px]" style={{ color: '#f3727f' }}>{importError}</div>}
+            <p className="text-[10px] mt-2" style={{ color: '#b3b3b3' }}>Format: time,type</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Averages Grid */}
+      <div className="space-y-3">
+        <h3 className="text-[18px] font-bold text-white px-1">Recorded Averages</h3>
 
         {averages.length === 0 ? (
-           <div className="text-center py-12 text-text-muted bg-surface/30 rounded-xl border border-dashed border-border">
-            <Calculator size={48} className="mx-auto mb-4 opacity-20" />
-            <p className="text-lg">No averages recorded yet</p>
+          <div
+            className="text-center py-12 rounded-lg"
+            style={{ color: '#b3b3b3', border: '1px dashed #282828', backgroundColor: '#181818' }}
+          >
+            <Calculator size={40} className="mx-auto mb-4 opacity-20" />
+            <p>No averages recorded yet</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {averages.map((average) => (
               <div
                 key={average._id}
-                className="group relative bg-surface hover:bg-surface-hover/80 border border-border p-6 rounded-xl transition-all duration-200"
+                className="relative p-5 rounded-lg transition-all duration-200 group"
+                style={{ backgroundColor: '#181818' }}
+                onMouseEnter={e => e.currentTarget.style.backgroundColor = '#1f1f1f'}
+                onMouseLeave={e => e.currentTarget.style.backgroundColor = '#181818'}
               >
-                <div className="flex justify-between items-start mb-2">
-                   <div className="font-bold text-lg text-primary">{average.type}</div>
-                   {average.isPB && <Badge className="bg-yellow-500/20 text-yellow-300 border-yellow-500/30">PB</Badge>}
+                <div className="flex justify-between items-start mb-1">
+                  <div className="font-bold text-[14px]" style={{ color: '#1ed760' }}>{average.type}</div>
+                  {average.isPB && <Badge>PB</Badge>}
                 </div>
-                
-                <div className="font-mono text-3xl font-bold tracking-tight mb-2">
+
+                <div className="font-mono text-[28px] font-bold tracking-tight mb-1 text-white">
                   {average.timeInSeconds.toFixed(2)}s
                 </div>
-                
-                <p className="text-xs text-text-muted">Average of 5</p>
 
-                <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Button
-                    variant="ghost" 
-                    size="icon"
-                    className="h-8 w-8 text-text-muted hover:text-red-400 hover:bg-red-500/10"
-                     onClick={() => {
-                        if(confirm("Delete this average?")) handleDeleteAverage(average._id);
-                      }}
-                  >
-                    <Trash2 size={16} />
-                  </Button>
-                </div>
+                <p className="text-[12px]" style={{ color: '#b3b3b3' }}>Average of 5</p>
+
+                {/* Delete — reveal on hover */}
+                <button
+                  onClick={() => { if(confirm("Delete this average?")) handleDeleteAverage(average._id); }}
+                  className="absolute top-4 right-4 p-2 rounded-full transition-all opacity-0 group-hover:opacity-100"
+                  style={{ color: '#b3b3b3' }}
+                  onMouseEnter={e => { e.currentTarget.style.color = '#f3727f'; e.currentTarget.style.backgroundColor = 'rgba(243,114,127,0.1)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.color = '#b3b3b3'; e.currentTarget.style.backgroundColor = 'transparent'; }}
+                >
+                  <Trash2 size={15} />
+                </button>
               </div>
             ))}
           </div>
@@ -222,5 +244,4 @@ export default function Averages() {
       </div>
     </div>
   );
-
 }

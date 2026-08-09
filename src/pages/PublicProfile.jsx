@@ -1,7 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../utils/api";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
 import { Trophy, Timer, User, Swords } from 'lucide-react';
 
@@ -25,7 +24,6 @@ export function PublicProfile() {
       setChallengeStatus('sent');
       setTimeout(() => setChallengeStatus('idle'), 3000);
     } catch (err) {
-      const msg = err?.response?.data?.message || 'Failed to send challenge';
       setChallengeStatus('error');
       setTimeout(() => setChallengeStatus('idle'), 3000);
     }
@@ -39,60 +37,87 @@ export function PublicProfile() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#0f172a] text-white px-4">
-        <Card className="w-full max-w-md border-red-500/20 bg-surface/50">
-          <CardContent className="flex flex-col items-center p-8 text-center">
-            <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center text-red-400 mb-4">
-              <User size={24} />
-            </div>
-            <h1 className="text-xl font-bold text-red-400">{error}</h1>
-          </CardContent>
-        </Card>
+      <div
+        className="flex items-center justify-center min-h-screen px-4"
+        style={{ backgroundColor: '#121212', color: '#ffffff' }}
+      >
+        <div
+          className="w-full max-w-md rounded-lg p-8 text-center"
+          style={{ backgroundColor: '#181818', boxShadow: 'rgba(0,0,0,0.5) 0px 8px 24px' }}
+        >
+          <div
+            className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4"
+            style={{ backgroundColor: 'rgba(243,114,127,0.1)' }}
+          >
+            <User size={24} style={{ color: '#f3727f' }} />
+          </div>
+          <h1 className="text-lg font-bold" style={{ color: '#f3727f' }}>{error}</h1>
+        </div>
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#0f172a] text-white px-4">
-        <Card className="w-full max-w-md border-white/10 bg-surface/50 animate-pulse">
-          <CardContent className="p-8 text-center">
-             <h1 className="text-xl font-mont text-slate-300">Loading profile...</h1>
-          </CardContent>
-        </Card>
+      <div
+        className="flex items-center justify-center min-h-screen px-4"
+        style={{ backgroundColor: '#121212', color: '#ffffff' }}
+      >
+        <div
+          className="w-full max-w-md rounded-lg p-8 text-center animate-pulse"
+          style={{ backgroundColor: '#181818' }}
+        >
+          <h1 className="text-lg font-bold" style={{ color: '#b3b3b3' }}>Loading profile...</h1>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-white py-12 px-4">
+    <div
+      className="min-h-screen py-12 px-4"
+      style={{ backgroundColor: '#121212', color: '#ffffff' }}
+    >
       <div className="max-w-4xl mx-auto space-y-8">
-        
+
         {/* Header */}
-        <div className="text-center space-y-2 animate-in slide-in-from-bottom-4 duration-500">
-          <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 mb-4 shadow-lg shadow-blue-500/20">
-            <span className="text-3xl font-bold font-mont text-white">{data.username.charAt(0).toUpperCase()}</span>
+        <div className="text-center space-y-3">
+          <div
+            className="inline-flex items-center justify-center w-20 h-20 rounded-full mb-4"
+            style={{ backgroundColor: '#1ed760' }}
+          >
+            <span className="text-3xl font-bold text-black">
+              {data.username.charAt(0).toUpperCase()}
+            </span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold font-mont tracking-tight">
-            {data.username}<span className="text-blue-400">'s</span> PBs
+
+          <h1 className="text-[32px] md:text-[48px] font-bold tracking-tight text-white">
+            {data.username}<span style={{ color: '#1ed760' }}>'s</span> PBs
           </h1>
-          <p className="text-slate-400">Personal Best Times & Averages</p>
+          <p style={{ color: '#b3b3b3' }}>Personal Best Times &amp; Averages</p>
 
           {/* Challenge button — only show if viewer is logged in */}
           {isLoggedIn && (
-            <div className="pt-3">
+            <div className="pt-2">
               <button
                 onClick={handleChallenge}
                 disabled={challengeStatus === 'sending' || challengeStatus === 'sent'}
-                className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm transition-all duration-200 shadow-lg active:scale-95 disabled:opacity-70 ${
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-[13px] uppercase tracking-[1.4px] transition-all duration-200 active:scale-95 disabled:opacity-70"
+                style={
                   challengeStatus === 'sent'
-                    ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                    ? { backgroundColor: 'rgba(30,215,96,0.1)', color: '#1ed760', border: '1px solid rgba(30,215,96,0.3)' }
                     : challengeStatus === 'error'
-                    ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                    : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-blue-500/20'
-                }`}
+                    ? { backgroundColor: 'rgba(243,114,127,0.1)', color: '#f3727f', border: '1px solid rgba(243,114,127,0.3)' }
+                    : { backgroundColor: '#1ed760', color: '#000000' }
+                }
+                onMouseEnter={e => {
+                  if (challengeStatus === 'idle') e.currentTarget.style.backgroundColor = '#1db954';
+                }}
+                onMouseLeave={e => {
+                  if (challengeStatus === 'idle') e.currentTarget.style.backgroundColor = '#1ed760';
+                }}
               >
-                <Swords size={15} />
+                <Swords size={14} />
                 {challengeStatus === 'sending' ? 'Sending…' :
                  challengeStatus === 'sent' ? 'Challenge Sent!' :
                  challengeStatus === 'error' ? 'Already Pending' :
@@ -102,59 +127,74 @@ export function PublicProfile() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in slide-in-from-bottom-8 duration-700">
-          
+        {/* PB Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
           {/* Singles */}
-          <Card className="border-blue-500/20 bg-surface/40 backdrop-blur-sm">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-blue-400">
-                <Trophy size={20} />
-                <span>Single Best</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {data.pbSolves.length === 0 ? (
-                   <p className="text-slate-500 italic text-sm py-4 text-center">No PB solves recorded yet.</p>
-                ) : (
-                  data.pbSolves.map((solve, idx) => (
-                    <div key={idx} className="flex justify-between items-center p-3 rounded-lg bg-slate-900/50 border border-white/5 hover:border-blue-500/30 transition-colors group">
-                      <span className="font-bold text-slate-200">{solve.type}</span>
-                      <Badge variant="secondary" className="font-mono text-lg bg-blue-500/10 text-blue-300 border-blue-500/20 group-hover:bg-blue-500/20">
-                        {solve.timeInSeconds.toFixed(2)}s
-                      </Badge>
-                    </div>
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <div
+            className="rounded-lg p-6"
+            style={{ backgroundColor: '#181818', boxShadow: 'rgba(0,0,0,0.3) 0px 8px 8px' }}
+          >
+            <div className="flex items-center gap-2 mb-5">
+              <Trophy size={18} style={{ color: '#1ed760' }} />
+              <h2 className="text-[16px] font-bold text-white">Single Best</h2>
+            </div>
+            <div className="space-y-2">
+              {data.pbSolves.length === 0 ? (
+                <p className="italic text-sm py-4 text-center" style={{ color: '#b3b3b3' }}>
+                  No PB solves recorded yet.
+                </p>
+              ) : (
+                data.pbSolves.map((solve, idx) => (
+                  <div
+                    key={idx}
+                    className="flex justify-between items-center p-3 rounded-lg transition-colors"
+                    style={{ backgroundColor: '#1f1f1f' }}
+                    onMouseEnter={e => e.currentTarget.style.backgroundColor = '#252525'}
+                    onMouseLeave={e => e.currentTarget.style.backgroundColor = '#1f1f1f'}
+                  >
+                    <span className="font-bold text-white">{solve.type}</span>
+                    <span className="font-mono text-[15px] font-bold" style={{ color: '#1ed760' }}>
+                      {solve.timeInSeconds.toFixed(2)}s
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
 
           {/* Averages */}
-          <Card className="border-emerald-500/20 bg-surface/40 backdrop-blur-sm">
-            <CardHeader className="pb-2">
-              <CardTitle className="flex items-center gap-2 text-emerald-400">
-                <Timer size={20} />
-                <span>Best Averages</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {data.averages.length === 0 ? (
-                  <p className="text-slate-500 italic text-sm py-4 text-center">No PB averages recorded yet.</p>
-                ) : (
-                  data.averages.map((avg, idx) => (
-                    <div key={idx} className="flex justify-between items-center p-3 rounded-lg bg-slate-900/50 border border-white/5 hover:border-emerald-500/30 transition-colors group">
-                      <span className="font-bold text-slate-200">{avg.type}</span>
-                       <Badge variant="secondary" className="font-mono text-lg bg-emerald-500/10 text-emerald-300 border-emerald-500/20 group-hover:bg-emerald-500/20">
-                        {avg.timeInSeconds.toFixed(2)}s
-                      </Badge>
-                    </div>
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          <div
+            className="rounded-lg p-6"
+            style={{ backgroundColor: '#181818', boxShadow: 'rgba(0,0,0,0.3) 0px 8px 8px' }}
+          >
+            <div className="flex items-center gap-2 mb-5">
+              <Timer size={18} style={{ color: '#1ed760' }} />
+              <h2 className="text-[16px] font-bold text-white">Best Averages</h2>
+            </div>
+            <div className="space-y-2">
+              {data.averages.length === 0 ? (
+                <p className="italic text-sm py-4 text-center" style={{ color: '#b3b3b3' }}>
+                  No PB averages recorded yet.
+                </p>
+              ) : (
+                data.averages.map((avg, idx) => (
+                  <div
+                    key={idx}
+                    className="flex justify-between items-center p-3 rounded-lg transition-colors"
+                    style={{ backgroundColor: '#1f1f1f' }}
+                    onMouseEnter={e => e.currentTarget.style.backgroundColor = '#252525'}
+                    onMouseLeave={e => e.currentTarget.style.backgroundColor = '#1f1f1f'}
+                  >
+                    <span className="font-bold text-white">{avg.type}</span>
+                    <span className="font-mono text-[15px] font-bold" style={{ color: '#1ed760' }}>
+                      {avg.timeInSeconds.toFixed(2)}s
+                    </span>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
 
         </div>
       </div>

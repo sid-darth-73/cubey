@@ -1,16 +1,5 @@
-import { useTheme } from '../hooks/useTheme';
-import { Sun, Moon } from 'lucide-react';
-
+// ThemeToggle is a no-op in the new design — the app is always in dark mode.
+// The component is kept for API compatibility but renders nothing.
 export function ThemeToggle({ className = '' }) {
-  const { theme, toggleTheme } = useTheme();
-
-  return (
-    <button
-      onClick={toggleTheme}
-      className={`p-2 rounded-full transition-colors hover:bg-surface-hover/20 text-text-muted hover:text-primary ${className}`}
-      aria-label="Toggle theme"
-    >
-      {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-    </button>
-  );
+  return null;
 }

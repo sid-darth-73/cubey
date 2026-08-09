@@ -1,8 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "../components/ui/Button";
 import { Input } from "../components/ui/Input";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
 import api from "../utils/api";
 
 export function Signup() {
@@ -44,53 +42,94 @@ export function Signup() {
     }, []);
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-[#0f172a] text-white px-4 relative overflow-hidden">
-            {/* Background Decor */}
-            <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-600/20 rounded-full blur-3xl opacity-40"></div>
-                <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-purple-600/20 rounded-full blur-3xl opacity-40"></div>
-            </div>
-
-            <Card className="w-full max-w-md relative z-10 border-white/10 bg-surface/50">
-                <CardHeader>
-                    <CardTitle className="text-center text-3xl mb-2 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">
-                        Join Speed Solver Social
-                    </CardTitle>
-                    <p className="text-center text-slate-400 text-sm">
+        <div
+            className="flex items-center justify-center min-h-screen px-4"
+            style={{ backgroundColor: '#121212', color: '#ffffff' }}
+        >
+            {/* Card */}
+            <div
+                className="w-full max-w-md rounded-lg p-8"
+                style={{
+                    backgroundColor: '#181818',
+                    boxShadow: 'rgba(0,0,0,0.5) 0px 8px 24px',
+                }}
+            >
+                {/* Header */}
+                <div className="text-center mb-8">
+                    <div
+                        className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-5 text-black text-lg font-black"
+                        style={{ backgroundColor: '#1ed760' }}
+                    >
+                        S
+                    </div>
+                    <h1 className="text-[24px] font-bold text-white mb-1">Join Speed Solver Social</h1>
+                    <p className="text-[14px]" style={{ color: '#b3b3b3' }}>
                         Track your PBs, drill algs, and level up!
                     </p>
-                </CardHeader>
-                <CardContent className="flex flex-col gap-5">
-                    <Input 
-                        ref={emailRef} 
-                        label="WCA ID or Email" 
-                        placeholder="Enter your WCA ID or Email" 
+                </div>
+
+                {/* Form */}
+                <div className="flex flex-col gap-5">
+                    <Input
+                        ref={emailRef}
+                        label="WCA ID or Email"
+                        placeholder="Enter your WCA ID or Email"
                         autoFocus
                     />
-                    
-                    <Input 
-                        ref={passwordRef} 
-                        type="password" 
-                        label="Password" 
-                        placeholder="Create a password" 
+
+                    <Input
+                        ref={passwordRef}
+                        type="password"
+                        label="Password"
+                        placeholder="Create a password"
                     />
 
-                    {error && <div className="text-red-400 text-sm bg-red-500/10 p-2 rounded border border-red-500/20 text-center">{error}</div>}
-
-                    <Button onClick={handleSignUp} loading={loading} className="w-full mt-2">
-                        Sign Up
-                    </Button>
-
-                    <div className="relative my-2">
-                        <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t border-slate-700"></span>
+                    {error && (
+                        <div
+                            className="text-sm p-3 rounded-lg text-center text-[#f3727f]"
+                            style={{ backgroundColor: 'rgba(243,114,127,0.1)', border: '1px solid rgba(243,114,127,0.2)' }}
+                        >
+                            {error}
                         </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-[#0f172a] px-2 text-slate-400">Or continue with</span>
+                    )}
+
+                    <button
+                        onClick={handleSignUp}
+                        disabled={loading}
+                        className="w-full h-12 rounded-full text-[14px] font-bold uppercase tracking-[1.4px] transition-all duration-200 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                        style={{ backgroundColor: '#1ed760', color: '#000000' }}
+                        onMouseEnter={e => { if (!loading) e.currentTarget.style.backgroundColor = '#1db954'; }}
+                        onMouseLeave={e => { if (!loading) e.currentTarget.style.backgroundColor = '#1ed760'; }}
+                    >
+                        {loading && (
+                            <span className="h-4 w-4 rounded-full border-2 border-black border-t-transparent animate-spin" />
+                        )}
+                        Sign Up
+                    </button>
+
+                    {/* Divider */}
+                    <div className="relative my-1">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full" style={{ borderTop: '1px solid #282828' }} />
+                        </div>
+                        <div className="relative flex justify-center">
+                            <span
+                                className="px-3 text-[11px] uppercase tracking-widest"
+                                style={{ backgroundColor: '#181818', color: '#b3b3b3' }}
+                            >
+                                Or continue with
+                            </span>
                         </div>
                     </div>
 
-                    <Button onClick={() => window.location.href = `${import.meta.env.VITE_BACKEND_URL || "http://localhost:3002"}/auth/google`} variant="outline" className="w-full flex items-center justify-center gap-2 border-slate-700 hover:bg-slate-800 bg-[#1e293b]">
+                    {/* Google */}
+                    <button
+                        onClick={() => window.location.href = `${import.meta.env.VITE_BACKEND_URL || "http://localhost:3002"}/auth/google`}
+                        className="w-full h-11 rounded-full text-[14px] font-bold flex items-center justify-center gap-2 transition-all duration-200"
+                        style={{ backgroundColor: '#1f1f1f', color: '#ffffff', border: '1px solid #4d4d4d' }}
+                        onMouseEnter={e => e.currentTarget.style.backgroundColor = '#252525'}
+                        onMouseLeave={e => e.currentTarget.style.backgroundColor = '#1f1f1f'}
+                    >
                         <svg className="h-5 w-5" viewBox="0 0 24 24">
                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                             <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
@@ -99,16 +138,22 @@ export function Signup() {
                             <path d="M1 1h22v22H1z" fill="none" />
                         </svg>
                         Google
-                    </Button>
+                    </button>
 
-                    <p className="text-sm text-center text-slate-400 mt-2">
+                    <p className="text-sm text-center" style={{ color: '#b3b3b3' }}>
                         Already have an account?{" "}
-                        <span onClick={() => navigate("/signin")} className="text-blue-400 cursor-pointer hover:text-blue-300 font-medium transition-colors">
+                        <span
+                            onClick={() => navigate("/signin")}
+                            className="font-bold cursor-pointer transition-colors"
+                            style={{ color: '#1ed760' }}
+                            onMouseEnter={e => e.currentTarget.style.color = '#1db954'}
+                            onMouseLeave={e => e.currentTarget.style.color = '#1ed760'}
+                        >
                             Sign in
                         </span>
                     </p>
-                </CardContent>
-            </Card>
+                </div>
+            </div>
         </div>
     );
 }
