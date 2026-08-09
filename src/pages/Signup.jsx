@@ -27,6 +27,7 @@ export function Signup() {
             localStorage.setItem("token", data.token);
             localStorage.setItem("shareLink", data.shareLink);
             localStorage.setItem("user", email);
+            window.dispatchEvent(new Event('user:loggedin'));
             navigate("/dashboard/timer");
         } catch(err) {
             setError(err.response?.data?.message || "Signup failed");

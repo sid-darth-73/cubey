@@ -24,6 +24,7 @@ export function DashboardLayout() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('shareLink');
+    window.dispatchEvent(new Event('user:loggedout'));
     navigate('/signin');
   };
 

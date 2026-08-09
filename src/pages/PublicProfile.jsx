@@ -3,12 +3,33 @@ import { useEffect, useState } from "react";
 import api from "../utils/api";
 import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/Card";
 import { Badge } from "../components/ui/Badge";
-import { Trophy, Timer, User } from 'lucide-react';
+import { Trophy, Timer, User, Swords } from 'lucide-react';
 
 export function PublicProfile() {
   const { shareLink } = useParams();
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
+  const [challengeStatus, setChallengeStatus] = useState('idle'); // idle | sending | sent | error
+
+  const myToken = localStorage.getItem('token');
+  const isLoggedIn = !!myToken;
+
+  const handleChallenge = async () => {
+    if (!data?.userId) return;
+    setChallengeStatus('sending');
+    try {
+      await api.post('/battles/challenge', {
+        challengeeId: data.userId,
+        puzzleType: '3x3',
+      });
+      setChallengeStatus('sent');
+      setTimeout(() => setChallengeStatus('idle'), 3000);
+    } catch (err) {
+      const msg = err?.response?.data?.message || 'Failed to send challenge';
+      setChallengeStatus('error');
+      setTimeout(() => setChallengeStatus('idle'), 3000);
+    }
+  };
 
   useEffect(() => {
     api.get(`/pb/${shareLink}`)
@@ -56,6 +77,29 @@ export function PublicProfile() {
             {data.username}<span className="text-blue-400">'s</span> PBs
           </h1>
           <p className="text-slate-400">Personal Best Times & Averages</p>
+
+          {/* Challenge button — only show if viewer is logged in */}
+          {isLoggedIn && (
+            <div className="pt-3">
+              <button
+                onClick={handleChallenge}
+                disabled={challengeStatus === 'sending' || challengeStatus === 'sent'}
+                className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm transition-all duration-200 shadow-lg active:scale-95 disabled:opacity-70 ${
+                  challengeStatus === 'sent'
+                    ? 'bg-green-500/20 text-green-400 border border-green-500/30'
+                    : challengeStatus === 'error'
+                    ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                    : 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white shadow-blue-500/20'
+                }`}
+              >
+                <Swords size={15} />
+                {challengeStatus === 'sending' ? 'Sending…' :
+                 challengeStatus === 'sent' ? 'Challenge Sent!' :
+                 challengeStatus === 'error' ? 'Already Pending' :
+                 `Challenge ${data.username}`}
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in slide-in-from-bottom-8 duration-700">

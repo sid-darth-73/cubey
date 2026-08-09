@@ -28,6 +28,8 @@ export function Signin() {
             localStorage.setItem("token", data.token);
             localStorage.setItem("shareLink", data.shareLink);
             localStorage.setItem("user", email);
+            // Tell SocketContext to connect now that we have a token
+            window.dispatchEvent(new Event('user:loggedin'));
             navigate("/dashboard/timer");
         } catch (err) {
             setError(err.response?.data?.message || "Invalid credentials");
